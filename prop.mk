@@ -70,6 +70,7 @@ persist.vendor.dpm.loglevel=0
 
 # Display
 PRODUCT_PROPERTY_OVERRIDES += \
+debug.cpurend.vsync=false \
 debug.egl.hw=0 \
 debug.enable.sglscale=1 \
 debug.gralloc.enable_fb_ubwc=1 \
