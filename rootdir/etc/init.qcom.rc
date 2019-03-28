@@ -543,13 +543,6 @@ on charger
     
     start qcom-post-boot
 
-#Mixed HWC versions among targets
-on property:init.svc.surfaceflinger=restarting
-    stop  vendor.hwcomposer-2-1
-    stop  vendor.hwcomposer-2-2
-    start vendor.hwcomposer-2-1
-    start vendor.hwcomposer-2-2
-
 service vendor.audio-hal /vendor/bin/hw/android.hardware.audio.service
     override
     class hal
