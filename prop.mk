@@ -142,10 +142,6 @@ vendor.video.disable.ubwc=1
 PRODUCT_PROPERTY_OVERRIDES += \
 ro.vendor.qti.sys.fw.bservice_enable=true
 
-# Perf
-PRODUCT_PROPERTY_OVERRIDES += \
-ro.vendor.perf.scroll_opt=true
-
 # Netmgrd
 PRODUCT_PROPERTY_OVERRIDES += \
 ro.vendor.use_data_netmgrd=true \
@@ -163,6 +159,11 @@ persist.rild.nitz_short_ons_0="" \
 persist.rild.nitz_short_ons_1="" \
 persist.rild.nitz_short_ons_2="" \
 persist.rild.nitz_short_ons_3=""
+
+# Perf
+PRODUCT_PROPERTY_OVERRIDES += \
+ro.vendor.extension_library=libqti-perfd-client.so \
+ro.vendor.perf.scroll_opt=true
 
 # Radio
 PRODUCT_PROPERTY_OVERRIDES += \
