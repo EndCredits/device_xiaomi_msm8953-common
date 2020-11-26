@@ -629,4 +629,9 @@
     <item name="config_wallpaperMaxScale" format="float" type="dimen">1.00</item>
 
     <bool name="config_button_brightness_support">true</bool>
+
+    <!-- For example, a device with notification and battery lights that supports
+         pulsating and RGB control would set this config to 75. -->
+    <integer name="config_deviceLightCapabilities">232</integer>
+
 </resources>
