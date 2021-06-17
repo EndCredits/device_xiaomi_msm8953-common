@@ -25,6 +25,9 @@
 /bt_firmware                                                  u:object_r:bt_firmware_file:s0
 /persist(/.*)?                                                u:object_r:mnt_vendor_file:s0
 
+# FPS Info
+/sys/devices/virtual/graphics/fb0/measured_fps                              u:object_r:sysfs_fps:s0
+
 # HALs
 /(vendor|system/vendor)/bin/hw/android\.hardware\.biometrics\.fingerprint@2\.1-service\.xiaomi_msm8953      u:object_r:hal_fingerprint_default_exec:s0
 /(vendor|system/vendor)/bin/hw/android\.hardware\.biometrics\.fingerprint@2\.1-service\.xiaomi_msm8953-32   u:object_r:hal_fingerprint_default_exec:s0
