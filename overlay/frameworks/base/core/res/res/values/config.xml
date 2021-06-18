@@ -634,4 +634,7 @@
          pulsating and RGB control would set this config to 75. -->
     <integer name="config_deviceLightCapabilities">232</integer>
 
+     <!-- Blank Display After Doze -->
+    <bool name="config_displayBlanksAfterDoze">true</bool>
+
 </resources>
