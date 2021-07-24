@@ -154,6 +154,12 @@ PRODUCT_PACKAGES += \
     android.hardware.drm@1.0-service \
     android.hardware.drm@1.3-service.clearkey
 
+# Fingerprint
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/biometrics/android.hardware.biometrics.fingerprint@2.1-service:$(TARGET_COPY_OUT_VENDOR)/bin/hw/android.hardware.biometrics.fingerprint@2.1-service \
+    $(LOCAL_PATH)/biometrics/init.biometrics.tiffany.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.biometrics.tiffany.rc \
+    $(LOCAL_PATH)/biometrics/android.hardware.biometrics.fingerprint@2.1-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.biometrics.fingerprint@2.1-service.rc
+
 # FM
 PRODUCT_PACKAGES += \
     FMRadio \
