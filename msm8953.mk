@@ -112,6 +112,16 @@ PRODUCT_COPY_FILES += \
 	frameworks/av/services/audiopolicy/config/r_submix_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/r_submix_audio_policy_configuration.xml \
 	frameworks/av/services/audiopolicy/config/usb_audio_policy_configuration.xml:$(TARGET_COPY_OUT_VENDOR)/etc/usb_audio_policy_configuration.xml
 
+# Biometrics
+PRODUCT_COPY_FILES += \
+    $(LOCAL_PATH)/biometrics/vendor_patch/bin/hw/android.hardware.biometrics.fingerprint@2.1-service:$(TARGET_COPY_OUT_VENDOR)/bin/hw/android.hardware.biometrics.fingerprint@2.1-service \
+    $(LOCAL_PATH)/biometrics/vendor_patch/bin/init.goodix.sh:$(TARGET_COPY_OUT_VENDOR)/bin/init.goodix.sh \
+    $(LOCAL_PATH)/biometrics/vendor_patch/etc/init/hw/init.target.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/hw/init.target.rc \
+    $(LOCAL_PATH)/biometrics/vendor_patch/etc/init/android.hardware.biometrics.fingerprint@2.1-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.biometrics.fingerprint@2.1-service.rc \
+    $(LOCAL_PATH)/biometrics/vendor_patch/etc/init/init.biometrics.tiffany.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.biometrics.tiffany.rc \
+    $(LOCAL_PATH)/biometrics/vendor_patch/etc/permissions/android.hardware.fingerprint.xml:$(TARGET_COPY_OUT_VENDOR)/etc/permissions/android.hardware.fingerprint.xml \
+    $(LOCAL_PATH)/biometrics/vendor_patch/lib64/libsoftkeymasterdevice.so:$(TARGET_COPY_OUT_VENDOR)/lib64/libsoftkeymasterdevice.so
+
 # Bluetooth
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/component-overrides.xml:$(TARGET_COPY_OUT_VENDOR)/etc/sysconfig/component-overrides.xml
@@ -153,12 +163,6 @@ PRODUCT_PACKAGES += \
     android.hardware.drm@1.0-impl \
     android.hardware.drm@1.0-service \
     android.hardware.drm@1.3-service.clearkey
-
-# Fingerprint
-PRODUCT_COPY_FILES += \
-    $(LOCAL_PATH)/biometrics/android.hardware.biometrics.fingerprint@2.1-service:$(TARGET_COPY_OUT_VENDOR)/bin/hw/android.hardware.biometrics.fingerprint@2.1-service \
-    $(LOCAL_PATH)/biometrics/init.biometrics.tiffany.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/init.biometrics.tiffany.rc \
-    $(LOCAL_PATH)/biometrics/android.hardware.biometrics.fingerprint@2.1-service.rc:$(TARGET_COPY_OUT_VENDOR)/etc/init/android.hardware.biometrics.fingerprint@2.1-service.rc
 
 # FM
 PRODUCT_PACKAGES += \
