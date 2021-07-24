@@ -18,6 +18,11 @@
 /dev/socket/fpce(/.*)?				u:object_r:fpce_socket:s0
 /sys/devices(/platform)?/soc/soc:fpc1020(/.*)?		u:object_r:fpc_sysfs:s0
 
+# Firmware
+/firmware                                                     u:object_r:firmware_file:s0
+/bt_firmware                                                  u:object_r:bt_firmware_file:s0
+/persist(/.*)?                                                u:object_r:mnt_vendor_file:s0
+
 # Glove Mode
 /sys/class/tp_glove/device(/.*)?		u:object_r:proc_touchpanel:s0
 /sys/devices/virtual/tp_glove(/.*)?		u:object_r:proc_touchpanel:s0
