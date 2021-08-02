@@ -1,0 +1,4 @@
+allow untrusted_app_27 proc_net:file { read };
+allow untrusted_app_27 proc_net:file { open };
+allow untrusted_app_27 sysfs:dir { read };
+allow untrusted_app_27 sysfs:dir { open };
