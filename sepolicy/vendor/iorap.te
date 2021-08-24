@@ -1,0 +1,9 @@
+allow iorap_inode2filename vendor_overlay_file:dir { read };
+allow iorap_inode2filename vendor_overlay_file:dir { open };
+allow iorap_inode2filename media_rw_data_file:dir { read };
+allow iorap_inode2filename media_rw_data_file:dir { open };
+allow iorap_inode2filename server_configurable_flags_data_file:dir { read };
+allow iorap_inode2filename server_configurable_flags_data_file:dir { open };
+allow iorap_inode2filename apk_private_data_file:dir { read };
+allow iorap_inode2filename apk_private_data_file:dir { open };
+allow iorap_inode2filename adb_data_file:dir { read };
