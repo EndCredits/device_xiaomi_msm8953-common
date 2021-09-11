@@ -25,7 +25,7 @@ allow hal_fingerprint_default gx_fpd_data_file:dir create_dir_perms;
 allow hal_fingerprint_default system_data_file:dir create_dir_perms;
 allow hal_fingerprint_default gx_fpd_data_file:file create_file_perms;
 
-allow hal_fingerprint_default sysfs_leds:dir { search };
-allow hal_fingerprint_default sysfs_battery_supply:dir { search };
+allow hal_fingerprint_default sysfs_leds:dir { open read write search };
+allow hal_fingerprint_default sysfs_battery_supply:dir { open read write search };
 
-dontaudit hal_fingerprint_default rootfs:dir { search read };
+dontaudit hal_fingerprint_default rootfs:dir { search read open write };

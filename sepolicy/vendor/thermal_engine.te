@@ -1,1 +1,1 @@
-allow thermal-engine sysfs:dir { read };
+allow thermal-engine sysfs:dir { open read write };
