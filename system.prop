@@ -79,6 +79,8 @@ vendor.vidc.disable.split.mode=1
 vendor.vidc.enc.disable_bframes=1
 vendor.vidc.enc.disable.pq=true
 vendor.video.disable.ubwc=1
+debug.stagefright.omx_default_rank=0
+debug.stagefright.omx_default_rank.sw-audio=1
 
 # Qualcomm
 ro.vendor.qti.va_aosp.support=1
