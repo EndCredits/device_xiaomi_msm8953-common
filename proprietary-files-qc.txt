@@ -376,7 +376,7 @@ vendor/firmware/a506_zap.b00|c45a7b34456844f5deb73e2dce79cbfcfb9ae71c
 vendor/firmware/a506_zap.b01|00a618f9ecde71e169200fbdc60428c81bab144c
 vendor/firmware/a506_zap.b02|b79957c47f0a6757ac1d721dbe06551508454634
 vendor/firmware/a506_zap.mdt|2945f21b47cf35bf22d8cb68e937c34ea64212c0
-vendor/firmware/a530_pfp.fw|448f9db8271fefb08348cbc50409e8e95bd93f78
+vendor/firmware/a530_pfp.fw|c19e1905c15622d7bb02409e6748959bceda9b08
 vendor/firmware/a530_pm4.fw|5741a28752355b478d455635bab008028ff7e1c6
 
 # Ipacm - from daisy
