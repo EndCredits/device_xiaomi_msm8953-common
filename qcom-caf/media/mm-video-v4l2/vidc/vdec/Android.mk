@@ -1,8 +1,9 @@
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
+include $(LIBION_HEADER_PATH_WRAPPER)
 
 # ---------------------------------------------------------------------------------
-# 				Common definitons
+#                      Common definitons
 # ---------------------------------------------------------------------------------
 
 libmm-vdec-def := -D__alignx\(x\)=__attribute__\(\(__aligned__\(x\)\)\)
@@ -80,9 +81,9 @@ include $(CLEAR_VARS)
 
 # Common Includes
 libmm-vdec-inc          := $(LOCAL_PATH)/inc
+libmm-vdec-inc          += $(LIBION_HEADER_PATHS)
 libmm-vdec-inc          += $(call project-path-for,qcom-media)/mm-video-v4l2/vidc/common/inc
 libmm-vdec-inc          += $(call project-path-for,qcom-media)/mm-core/inc
-libmm-vdec-inc          += $(TARGET_OUT_HEADERS)/qcom/display
 libmm-vdec-inc          += $(TARGET_OUT_HEADERS)/adreno
 libmm-vdec-inc          += $(call project-path-for,qcom-media)/libc2dcolorconvert
 libmm-vdec-inc          += $(call project-path-for,qcom-media)/hypv-intercept
@@ -179,7 +180,8 @@ LOCAL_HEADER_LIBRARIES := \
         media_plugin_headers \
         libnativebase_headers \
         libutils_headers \
-        libhardware_headers
+        libhardware_headers \
+        display_headers
 
 LOCAL_C_INCLUDES              += $(libmm-vdec-inc)
 LOCAL_ADDITIONAL_DEPENDENCIES := $(libmm-vdec-add-dep)

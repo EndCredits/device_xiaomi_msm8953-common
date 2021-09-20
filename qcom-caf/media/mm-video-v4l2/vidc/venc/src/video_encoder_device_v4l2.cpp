@@ -7011,7 +7011,7 @@ bool venc_dev::venc_set_iframesize_type(QOMX_VIDEO_IFRAMESIZE_TYPE type)
 bool venc_dev::venc_set_baselayerid(OMX_U32 baseid)
 {
     struct v4l2_control control;
-    if (hier_layers.hier_mode == HIER_P) {
+    if (hier_layers.hier_mode == HIER_P || temporal_layers_config.hier_mode == HIER_P) {
         control.id = V4L2_CID_MPEG_VIDC_VIDEO_BASELAYER_ID;
         control.value = baseid;
         DEBUG_PRINT_LOW("Going to set V4L2_CID_MPEG_VIDC_VIDEO_BASELAYER_ID");
@@ -7930,10 +7930,12 @@ bool venc_dev::venc_validate_profile_level(OMX_U32 *eProfile, OMX_U32 *eLevel)
 
         profile_tbl = (unsigned int const *)h264_profile_level_table;
         if ((*eProfile != OMX_VIDEO_AVCProfileBaseline) &&
-            (*eProfile != QOMX_VIDEO_AVCProfileConstrainedBaseline) &&
+            (*eProfile != OMX_VIDEO_AVCProfileMain) &&
             (*eProfile != OMX_VIDEO_AVCProfileHigh) &&
-            (*eProfile != QOMX_VIDEO_AVCProfileConstrainedHigh) &&
-            (*eProfile != OMX_VIDEO_AVCProfileMain)) {
+            (*eProfile != OMX_VIDEO_AVCProfileConstrainedBaseline) &&
+            (*eProfile != QOMX_VIDEO_AVCProfileConstrainedBaseline) &&
+            (*eProfile != OMX_VIDEO_AVCProfileConstrainedHigh) &&
+            (*eProfile != QOMX_VIDEO_AVCProfileConstrainedHigh)) {
             DEBUG_PRINT_LOW("Unsupported AVC profile type %u", (unsigned int)*eProfile);
             return false;
         }
