@@ -7,7 +7,7 @@ LOCAL_VENDOR_MODULE           := true
 LOCAL_MODULE_TAGS             := optional
 LOCAL_C_INCLUDES              := $(common_includes) $(kernel_includes)
 LOCAL_HEADER_LIBRARIES        := display_headers
-LOCAL_CFLAGS                  := -Wno-unused-parameter -DLOG_TAG=\"SDM\" \
+LOCAL_CFLAGS                  := -Wno-unused-parameter -fexceptions -DLOG_TAG=\"SDM\" \
                                  $(common_flags)
 LOCAL_HW_INTF_PATH_1          := fb
 LOCAL_SHARED_LIBRARIES        := libdl libsdmutils
@@ -20,14 +20,6 @@ endif
 
 ifeq ($(TARGET_USES_DRM_PP),true)
     LOCAL_CFLAGS              += -DPP_DRM_ENABLE
-endif
-
-ifneq ($(TARGET_DISPLAY_SHIFT_HORIZONTAL),)
-    LOCAL_CFLAGS += -DDISPLAY_SHIFT_HORIZONTAL=$(TARGET_DISPLAY_SHIFT_HORIZONTAL)
-endif
-
-ifneq ($(TARGET_DISPLAY_SHIFT_VERTICAL),)
-    LOCAL_CFLAGS += -DDISPLAY_SHIFT_VERTICAL=$(TARGET_DISPLAY_SHIFT_VERTICAL)
 endif
 
 LOCAL_ADDITIONAL_DEPENDENCIES := $(common_deps) $(kernel_deps)
@@ -62,31 +54,3 @@ ifneq ($(TARGET_IS_HEADLESS), true)
 endif
 
 include $(BUILD_SHARED_LIBRARY)
-
-SDM_HEADER_PATH := ../../include
-include $(CLEAR_VARS)
-LOCAL_VENDOR_MODULE           := true
-LOCAL_COPY_HEADERS_TO         := $(common_header_export_path)/sdm/core
-LOCAL_COPY_HEADERS             = $(SDM_HEADER_PATH)/core/buffer_allocator.h \
-                                 $(SDM_HEADER_PATH)/core/buffer_sync_handler.h \
-                                 $(SDM_HEADER_PATH)/core/core_interface.h \
-                                 $(SDM_HEADER_PATH)/core/debug_interface.h \
-                                 $(SDM_HEADER_PATH)/core/display_interface.h \
-                                 $(SDM_HEADER_PATH)/core/layer_buffer.h \
-                                 $(SDM_HEADER_PATH)/core/layer_stack.h \
-                                 $(SDM_HEADER_PATH)/core/sdm_types.h \
-                                 $(SDM_HEADER_PATH)/core/socket_handler.h
-include $(BUILD_COPY_HEADERS)
-
-include $(CLEAR_VARS)
-LOCAL_VENDOR_MODULE           := true
-LOCAL_COPY_HEADERS_TO         := $(common_header_export_path)/sdm/private
-LOCAL_COPY_HEADERS             = $(SDM_HEADER_PATH)/private/color_interface.h \
-                                 $(SDM_HEADER_PATH)/private/color_params.h \
-                                 $(SDM_HEADER_PATH)/private/extension_interface.h \
-                                 $(SDM_HEADER_PATH)/private/hw_info_types.h \
-                                 $(SDM_HEADER_PATH)/private/partial_update_interface.h \
-                                 $(SDM_HEADER_PATH)/private/resource_interface.h \
-                                 $(SDM_HEADER_PATH)/private/strategy_interface.h \
-                                 $(SDM_HEADER_PATH)/private/dpps_control_interface.h
-include $(BUILD_COPY_HEADERS)
