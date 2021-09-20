@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2016-2017, 2018, The Linux Foundation. All rights reserved.
+* Copyright (c) 2016-2019, The Linux Foundation. All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are
@@ -41,6 +41,8 @@
 #include "audio_hw.h"
 #include "audio_extn.h"
 #include "audio_hw_extn_api.h"
+
+#include <pthread.h>
 
 #ifdef DYNAMIC_LOG_ENABLED
 #include <log_xml_parser.h>
@@ -202,7 +204,7 @@ int qahwi_in_stop(struct audio_stream_in* stream) {
     if (!in->standby) {
         if (in->pcm != NULL ) {
             pcm_stop(in->pcm);
-        } else if (audio_extn_cin_attached_usecase(in->usecase)) {
+        } else if (audio_extn_cin_attached_usecase(in)) {
             audio_extn_cin_stop_input_stream(in);
         }
 

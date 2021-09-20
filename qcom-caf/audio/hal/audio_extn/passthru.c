@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2014-2019, The Linux Foundation. All rights reserved.
+* Copyright (c) 2014-2020, The Linux Foundation. All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are
@@ -244,14 +244,25 @@ int passthru_get_channel_count(struct stream_out *out)
  */
 bool passthru_should_drop_data(struct stream_out * out)
 {
+    uint32_t compr_passthr = 0;
     /*Drop data only
      *stream is routed to HDMI and
      *stream has PCM format or
      *if a compress offload (DSP decode) session
      */
-    if ((out->devices & AUDIO_DEVICE_OUT_AUX_DIGITAL) &&
+
+    if(out->compr_config.codec != NULL) {
+#ifdef AUDIO_GKI_ENABLED
+        /* out->compr_config.codec->reserved[0] is for compr_passthr */
+        compr_passthr = out->compr_config.codec->reserved[0];
+#else
+        compr_passthr = out->compr_config.codec->compr_passthr;
+#endif
+    }
+
+    if (compare_device_type(&out->device_list, AUDIO_DEVICE_OUT_AUX_DIGITAL) &&
         (((out->format & AUDIO_FORMAT_MAIN_MASK) == AUDIO_FORMAT_PCM) ||
-        ((out->compr_config.codec != NULL) && (out->compr_config.codec->compr_passthr == LEGACY_PCM)))) {
+        (compr_passthr == LEGACY_PCM))) {
         if (android_atomic_acquire_load(&compress_passthru_active) > 0) {
             ALOGI("drop data as pass thru is active");
             return true;
@@ -285,7 +296,7 @@ void passthru_on_start(struct stream_out * out)
         list_for_each(node, &adev->usecase_list) {
             usecase = node_to_item(node, struct audio_usecase, list);
             if (usecase->stream.out && usecase->type == PCM_PLAYBACK &&
-                usecase->devices & AUDIO_DEVICE_OUT_AUX_DIGITAL) {
+                compare_device_type(&usecase->device_list, AUDIO_DEVICE_OUT_AUX_DIGITAL)) {
                 o = usecase->stream.out;
                 temp = o->config.period_size * 1000000LL / o->sample_rate;
                 if (temp > max_period_us)
@@ -314,7 +325,7 @@ void passthru_on_stop(struct stream_out * out)
         android_atomic_dec(&compress_passthru_active);
     }
 
-    if (out->devices & AUDIO_DEVICE_OUT_AUX_DIGITAL) {
+    if (compare_device_type(&out->device_list, AUDIO_DEVICE_OUT_AUX_DIGITAL)) {
         ALOGD("%s: passthru on aux digital, start keep alive", __func__);
         fp_audio_extn_keep_alive_start(KEEP_ALIVE_OUT_HDMI);
     }
@@ -461,21 +472,30 @@ void passthru_update_stream_configuration(
         struct audio_device *adev, struct stream_out *out,
         const void *buffer __unused, size_t bytes __unused)
 {
+    uint32_t compr_passthr = 0;
+
     if(out->compr_config.codec != NULL) {
         if (passthru_is_passt_supported(adev, out)) {
             ALOGV("%s:PASSTHROUGH", __func__);
-            out->compr_config.codec->compr_passthr = PASSTHROUGH;
+            compr_passthr = PASSTHROUGH;
         } else if (passthru_is_convert_supported(adev, out)) {
             ALOGV("%s:PASSTHROUGH CONVERT", __func__);
-            out->compr_config.codec->compr_passthr = PASSTHROUGH_CONVERT;
+            compr_passthr = PASSTHROUGH_CONVERT;
         } else if (out->format == AUDIO_FORMAT_IEC61937) {
             ALOGV("%s:PASSTHROUGH IEC61937", __func__);
-            out->compr_config.codec->compr_passthr = PASSTHROUGH_IEC61937;
+            compr_passthr = PASSTHROUGH_IEC61937;
         } else {
             ALOGV("%s:NO PASSTHROUGH", __func__);
-            out->compr_config.codec->compr_passthr = LEGACY_PCM;
+            compr_passthr = LEGACY_PCM;
        }
+#ifdef AUDIO_GKI_ENABLED
+        /* out->compr_config.codec->reserved[0] is for compr_passthr */
+        out->compr_config.codec->reserved[0] = compr_passthr;
+#else
+        out->compr_config.codec->compr_passthr = compr_passthr;
+#endif
     }
+
 }
 
 bool passthru_is_passthrough_stream(struct stream_out *out)
@@ -486,7 +506,7 @@ bool passthru_is_passthrough_stream(struct stream_out *out)
     }
 
     //check supported device, currently only on HDMI.
-    if (out->devices & AUDIO_DEVICE_OUT_AUX_DIGITAL) {
+    if (compare_device_type(&out->device_list, AUDIO_DEVICE_OUT_AUX_DIGITAL)) {
         //passthrough flag
         if (out->flags & AUDIO_OUTPUT_FLAG_COMPRESS_PASSTHROUGH)
             return true;
@@ -572,7 +592,7 @@ bool passthru_is_supported_backend_edid_cfg(struct audio_device *adev,
     snd_device_t out_snd_device = SND_DEVICE_NONE;
     int max_edid_channels = fp_platform_edid_get_max_channels(out->dev->platform);
 
-    out_snd_device = fp_platform_get_output_snd_device(adev->platform, out);
+    out_snd_device = fp_platform_get_output_snd_device(adev->platform, out, USECASE_TYPE_MAX);
 
     if (fp_platform_get_codec_backend_cfg(adev, out_snd_device, &backend_cfg)) {
         ALOGE("%s: ERROR: Unable to get current backend config!!!", __func__);

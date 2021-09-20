@@ -204,6 +204,8 @@ int bass_set_device(effect_context_t *context, uint32_t device)
     } else if (device == AUDIO_DEVICE_OUT_WIRED_HEADSET ||
         device == AUDIO_DEVICE_OUT_WIRED_HEADPHONE ||
         device == AUDIO_DEVICE_OUT_USB_HEADSET ||
+        device == AUDIO_DEVICE_OUT_USB_DEVICE ||
+        device == AUDIO_DEVICE_OUT_USB_ACCESSORY ||
         device == AUDIO_DEVICE_OUT_BLUETOOTH_A2DP ||
         device == AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES) {
         ALOGV("%s: set BB mode, device: %x", __func__, device);
@@ -348,6 +350,8 @@ int bassboost_set_device(effect_context_t *context, uint32_t device)
     if (device == AUDIO_DEVICE_OUT_WIRED_HEADSET ||
         device == AUDIO_DEVICE_OUT_WIRED_HEADPHONE ||
         device == AUDIO_DEVICE_OUT_USB_HEADSET ||
+        device == AUDIO_DEVICE_OUT_USB_DEVICE ||
+        device == AUDIO_DEVICE_OUT_USB_ACCESSORY ||
         device == AUDIO_DEVICE_OUT_BLUETOOTH_A2DP ||
         device == AUDIO_DEVICE_OUT_BLUETOOTH_A2DP_HEADPHONES) {
         if (bass_ctxt->temp_disabled) {

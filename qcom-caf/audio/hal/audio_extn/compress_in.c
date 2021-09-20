@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2016-2019, The Linux Foundation. All rights reserved.
+* Copyright (c) 2016-2020, The Linux Foundation. All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
 * modification, are permitted provided that the following conditions are
@@ -63,15 +63,22 @@ uint64_t timestamp;
 };
 #define compress_config_set_timstamp_flag(config) (-ENOSYS)
 #else
+#ifdef AUDIO_GKI_ENABLED
+/* (config).codec->reserved[1] is for flags */
+#define compress_config_set_timstamp_flag(config) \
+            (config)->codec->reserved[1] |= COMPRESSED_TIMESTAMP_FLAG
+#else
 #define compress_config_set_timstamp_flag(config) \
             (config)->codec->flags |= COMPRESSED_TIMESTAMP_FLAG
-#endif
+#endif /* AUDIO_GKI_ENABLED */
+#endif /* COMPRESSED_TIMESTAMP_FLAG */
 
 #define COMPRESS_RECORD_NUM_FRAGMENTS 8
 
 struct cin_private_data {
     struct compr_config compr_config;
     struct compress *compr;
+    bool usecase_acquired;
 };
 
 typedef struct cin_private_data cin_private_data_t;
@@ -103,14 +110,14 @@ bool cin_applicable_stream(struct stream_in *in)
  * 2. cin_configure_input_stream(in, in_config)
  */
 
-bool cin_attached_usecase(audio_usecase_t uc_id)
+bool cin_attached_usecase(struct stream_in *in)
 {
-    unsigned int i;
+    unsigned int i = 0;
+    audio_usecase_t uc_id = in->usecase;
 
     for (i = 0; i < sizeof(cin_usecases)/
                     sizeof(cin_usecases[0]); i++) {
-        if (uc_id == cin_usecases[i] &&
-            (cin_usecases_state & (0x1 << i)))
+        if (uc_id == cin_usecases[i] && in->cin_extn != NULL)
             return true;
     }
     return false;
@@ -164,6 +171,27 @@ bool cin_format_supported(audio_format_t format)
         return false;
 }
 
+int cin_acquire_usecase(struct stream_in *in)
+{
+    audio_usecase_t usecase = USECASE_INVALID;
+    cin_private_data_t *cin_data = (cin_private_data_t *) in->cin_extn;
+
+    if (cin_data->usecase_acquired) {
+        ALOGW("%s: in %p, usecase already acquired!", __func__, in);
+        return 0;
+    }
+
+    usecase = get_cin_usecase();
+    if (usecase == USECASE_INVALID) {
+        ALOGE("%s: in %p, failed to acquire usecase, max count reached!", __func__, in);
+        return -EBUSY;
+    }
+
+    in->usecase = usecase;
+    cin_data->usecase_acquired = true;
+    return 0;
+}
+
 size_t cin_get_buffer_size(struct stream_in *in)
 {
     size_t sz = 0;
@@ -186,6 +214,12 @@ int cin_open_input_stream(struct stream_in *in)
     cin_private_data_t *cin_data = (cin_private_data_t *) in->cin_extn;
 
     ALOGV("%s: in %p, cin_data %p", __func__, in, cin_data);
+
+    if (!cin_data->usecase_acquired) {
+        ALOGE("%s: in %p, invalid state: usecase not acquired yet!", __func__, in);
+        return ret;
+    }
+
     cin_data->compr = compress_open(adev->snd_card, in->pcm_device_id,
                                     COMPRESS_OUT, &cin_data->compr_config);
     if (cin_data->compr == NULL || !is_compress_ready(cin_data->compr)) {
@@ -222,6 +256,11 @@ void cin_close_input_stream(struct stream_in *in)
         compress_close(cin_data->compr);
         cin_data->compr = NULL;
     }
+
+    if (cin_data->usecase_acquired) {
+        free_cin_usecase(in->usecase);
+        cin_data->usecase_acquired = false;
+    }
 }
 
 void cin_free_input_stream_resources(struct stream_in *in)
@@ -233,7 +272,6 @@ void cin_free_input_stream_resources(struct stream_in *in)
         free(cin_data->compr_config.codec);
         free(cin_data);
     }
-    free_cin_usecase(in->usecase);
 }
 
 int cin_read(struct stream_in *in, void *buffer,
@@ -281,6 +319,7 @@ int cin_configure_input_stream(struct stream_in *in, struct audio_config *in_con
     struct audio_config config = {.format = 0};
     int ret = 0, buffer_size = 0, meta_size = sizeof(struct snd_codec_metadata);
     cin_private_data_t *cin_data = NULL;
+    uint32_t compr_passthr = 0, flags = 0;
 
     if (!COMPRESSED_TIMESTAMP_FLAG &&
         (in->flags & (AUDIO_INPUT_FLAG_TIMESTAMP | AUDIO_INPUT_FLAG_PASSTHROUGH))) {
@@ -303,13 +342,6 @@ int cin_configure_input_stream(struct stream_in *in, struct audio_config *in_con
         goto err_config;
     }
 
-    in->usecase = get_cin_usecase();
-    if (in->usecase == USECASE_INVALID) {
-        ALOGE("%s, Max allowed compress record usecase reached!", __func__);
-        ret = -EEXIST;
-        goto err_config;
-    }
-
     config.sample_rate = in->sample_rate;
     config.channel_mask = in->channel_mask;
     config.format = in->format;
@@ -326,17 +358,26 @@ int cin_configure_input_stream(struct stream_in *in, struct audio_config *in_con
     cin_data->compr_config.codec->format = hal_format_to_alsa(in->format);
 
     if (cin_data->compr_config.codec->id == SND_AUDIOCODEC_PCM)
-        cin_data->compr_config.codec->compr_passthr = LEGACY_PCM;
+        compr_passthr = LEGACY_PCM;
     else if (cin_data->compr_config.codec->id == SND_AUDIOCODEC_IEC61937)
-        cin_data->compr_config.codec->compr_passthr = PASSTHROUGH_IEC61937;
+        compr_passthr = PASSTHROUGH_IEC61937;
     else
-        cin_data->compr_config.codec->compr_passthr = PASSTHROUGH_GEN;
+        compr_passthr = PASSTHROUGH_GEN;
 
     if (in->flags & AUDIO_INPUT_FLAG_FAST) {
         ALOGD("%s: Setting latency mode to true", __func__);
-        cin_data->compr_config.codec->flags |= audio_extn_utils_get_perf_mode_flag();
+        flags |= audio_extn_utils_get_perf_mode_flag();
     }
 
+#ifdef AUDIO_GKI_ENABLED
+    /* out->compr_config.codec->reserved[0] is for compr_passthr */
+    cin_data->compr_config.codec->reserved[0] = compr_passthr;
+    /* out->compr_config.codec->reserved[1] is for flags */
+    cin_data->compr_config.codec->reserved[1] = flags;
+#else
+    cin_data->compr_config.codec->compr_passthr =  compr_passthr;
+    cin_data->compr_config.codec->flags = flags;
+#endif
     if ((in->flags & AUDIO_INPUT_FLAG_TIMESTAMP) ||
         (in->flags & AUDIO_INPUT_FLAG_PASSTHROUGH)) {
         compress_config_set_timstamp_flag(&cin_data->compr_config);

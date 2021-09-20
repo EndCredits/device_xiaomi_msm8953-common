@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013, 2016-2019 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2013, 2016-2020, The Linux Foundation. All rights reserved.
  * Not a Contribution.
  *
  * Copyright (C) 2013 The Android Open Source Project
@@ -1138,10 +1138,11 @@ int usb_get_sup_sample_rates(bool is_playback,
     uint32_t tries = _MIN(sample_rate_size, (uint32_t)__builtin_popcount(bm));
 
     int i = 0;
-    while (tries--) {
+    while (tries) {
         int idx = __builtin_ffs(bm) - 1;
         sample_rates[i++] = supported_sample_rates[idx];
         bm &= ~(1<<idx);
+        tries--;
     }
 
     return i;
@@ -1469,7 +1470,7 @@ int usb_check_and_set_svc_int(struct audio_usecase *uc_info,
         list_for_each(node, &adev->usecase_list) {
             usecase = node_to_item(node, struct audio_usecase, list);
             if (usecase->type == PCM_PLAYBACK &&
-                audio_is_usb_out_device(usecase->devices & AUDIO_DEVICE_OUT_ALL_USB )) {
+                is_usb_out_device_type(&usecase->device_list)) {
                 switch (usecase->id) {
                     case USECASE_AUDIO_PLAYBACK_MMAP:
                     case USECASE_AUDIO_PLAYBACK_ULL:
