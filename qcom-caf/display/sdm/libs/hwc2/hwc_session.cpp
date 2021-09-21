@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2014-2021, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2014-2019, The Linux Foundation. All rights reserved.
  * Not a Contribution.
  *
  * Copyright 2015 The Android Open Source Project
@@ -49,14 +49,7 @@
 
 #define __CLASS__ "HWCSession"
 
-#ifdef TARGET_MIN_KERNEL_4_14
-#define HWC_UEVENT_SWITCH_HDMI "change@/devices/virtual/graphics/fb2"
-#define CONN_STATE "STATUS="
-#else
 #define HWC_UEVENT_SWITCH_HDMI "change@/devices/virtual/switch/hdmi"
-#define CONN_STATE "SWITCH_STATE="
-#endif
-
 #define HWC_UEVENT_GRAPHICS_FB0 "change@/devices/virtual/graphics/fb0"
 
 static sdm::HWCSession::HWCModuleMethods g_hwc_module_methods;
@@ -207,7 +200,6 @@ int HWCSession::Init() {
       CreateNullDisplay();
       null_display_active_ = true;
     }
-    hwc_display_[HWC_DISPLAY_PRIMARY]->SetIsPrimaryPanel(true);
   } else {
     // Create and power on primary display
     status = HWCDisplayPrimary::Create(core_intf_, &buffer_allocator_, &callbacks_, qservice_,
@@ -959,7 +951,7 @@ android::status_t HWCSession::notifyCallback(uint32_t command, const android::Pa
       break;
 
     case qService::IQService::SET_IDLE_TIMEOUT:
-      SetIdleTimeout(UINT32(input_parcel->readInt32()));
+      setIdleTimeout(UINT32(input_parcel->readInt32()));
       break;
 
     case qService::IQService::SET_FRAME_DUMP_CONFIG:
@@ -978,7 +970,7 @@ android::status_t HWCSession::notifyCallback(uint32_t command, const android::Pa
         int disp_id = INT(input_parcel->readInt32());
         HWCDisplay::DisplayStatus disp_status =
               static_cast<HWCDisplay::DisplayStatus>(input_parcel->readInt32());
-        status = SetDisplayStatus(disp_id, disp_status);
+        status = SetSecondaryDisplayStatus(disp_id, disp_status);
         output_parcel->writeInt32(status);
       }
       break;
@@ -992,7 +984,7 @@ android::status_t HWCSession::notifyCallback(uint32_t command, const android::Pa
 
     case qService::IQService::TOGGLE_SCREEN_UPDATES: {
         int32_t input = input_parcel->readInt32();
-        status = ToggleScreenUpdate(input == 1);
+        status = toggleScreenUpdate(input == 1);
         output_parcel->writeInt32(status);
       }
       break;
@@ -1064,7 +1056,7 @@ android::status_t HWCSession::notifyCallback(uint32_t command, const android::Pa
 
     case qService::IQService::SET_CAMERA_STATUS: {
         uint32_t camera_status = UINT32(input_parcel->readInt32());
-        status = SetCameraLaunchStatus(camera_status);
+        status = setCameraLaunchStatus(camera_status);
       }
       break;
 
@@ -1109,14 +1101,6 @@ android::status_t HWCSession::notifyCallback(uint32_t command, const android::Pa
 
     case qService::IQService::GET_COMPOSER_STATUS:
       output_parcel->writeInt32(getComposerStatus());
-      break;
-
-    case qService::IQService::SET_STAND_BY_MODE:
-      status = SetStandByMode(input_parcel);
-      break;
-
-    case qService::IQService::GET_PANEL_RESOLUTION:
-      status = GetPanelResolution(input_parcel, output_parcel);
       break;
 
     default:
@@ -1511,7 +1495,7 @@ android::status_t HWCSession::QdcmCMDHandler(const android::Parcel *input_parcel
 void HWCSession::UEventHandler(const char *uevent_data, int length) {
   if (!strcasecmp(uevent_data, HWC_UEVENT_SWITCH_HDMI)) {
     DLOGI("Uevent HDMI = %s", uevent_data);
-    int connected = GetEventValue(uevent_data, length, CONN_STATE);
+    int connected = GetEventValue(uevent_data, length, "SWITCH_STATE=");
     if (connected >= 0) {
       DLOGI("HDMI = %s", connected ? "connected" : "disconnected");
       if (HotPlugHandler(connected) == -1) {
@@ -1568,12 +1552,8 @@ void HWCSession::ResetPanel() {
 int HWCSession::HotPlugHandler(bool connected) {
   int status = 0;
   bool notify_hotplug = false;
-  if (!first_commit_ && !connected && hdmi_is_primary_ && !null_display_active_) {
-    SCOPE_LOCK(locker_[HWC_DISPLAY_PRIMARY]);
+  if (!first_commit_ && !connected && hdmi_is_primary_) {
     DLOGI("Disconnect event before first commit");
-    HWCDisplayExternal::Destroy(hwc_display_[HWC_DISPLAY_PRIMARY]);
-    CreateNullDisplay();
-    null_display_active_ = true;
     return 0;
   }
 
@@ -1703,39 +1683,6 @@ android::status_t HWCSession::GetVisibleDisplayRect(const android::Parcel *input
   output_parcel->writeInt32(visible_rect.top);
   output_parcel->writeInt32(visible_rect.right);
   output_parcel->writeInt32(visible_rect.bottom);
-
-  return android::NO_ERROR;
-}
-
-android::status_t HWCSession::SetStandByMode(const android::Parcel *input_parcel) {
-  SCOPE_LOCK(locker_[HWC_DISPLAY_PRIMARY]);
-
-  bool enable = (input_parcel->readInt32() > 0);
-
-  if (!hwc_display_[HWC_DISPLAY_PRIMARY]) {
-    DLOGI("Primary display is not initialized");
-    return -EINVAL;
-  }
-
-  hwc_display_[HWC_DISPLAY_PRIMARY]->SetStandByMode(enable);
-
-  return android::NO_ERROR;
-}
-
-android::status_t HWCSession::GetPanelResolution(const android::Parcel *input_parcel,
-                                                 android::Parcel *output_parcel) {
-  SCOPE_LOCK(locker_[HWC_DISPLAY_PRIMARY]);
-
-  if (!hwc_display_[HWC_DISPLAY_PRIMARY]) {
-    DLOGI("Primary display is not initialized");
-    return -EINVAL;
-  }
-  auto panel_width = 0u;
-  auto panel_height = 0u;
-
-  hwc_display_[HWC_DISPLAY_PRIMARY]->GetPanelResolution(&panel_width, &panel_height);
-  output_parcel->writeInt32(INT32(panel_width));
-  output_parcel->writeInt32(INT32(panel_height));
 
   return android::NO_ERROR;
 }

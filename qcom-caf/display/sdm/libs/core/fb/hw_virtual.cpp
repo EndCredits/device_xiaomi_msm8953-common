@@ -82,14 +82,5 @@ DisplayError HWVirtual::GetDisplayAttributes(uint32_t index,
 }
 
 
-DisplayError HWVirtual::SetActiveConfig(uint32_t active_config) {
-
-  return kErrorNone;
-}
-
-DisplayError HWVirtual::GetHdmiMode(std::vector<uint32_t> &hdmi_modes) {
-  return kErrorNone;
-}
-
 }  // namespace sdm
 
