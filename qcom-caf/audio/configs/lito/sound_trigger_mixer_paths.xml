@@ -81,9 +81,6 @@
     <ctl name="EC Reference Channels" value="Zero"/>
     <ctl name="EC Reference Bit Format" value="0"/>
     <ctl name="EC Reference SampleRate" value="0"/>
-    <ctl name="ADC2_MIXER Switch" value="0" />
-    <ctl name="LPI Enable" value="0" />
-    <ctl name="ADC2 Volume" value="12" />
     <ctl name="VA_DEC0 MODE" value="ADC_DEFAULT" />
     <ctl name="ADC2_BCS Disable" value="0" />
 
@@ -300,6 +297,7 @@
         <ctl name="VA_AIF1_CAP Mixer DEC0" value="1" />
         <ctl name="VA DEC0 MUX" value="SWR_MIC" />
         <ctl name="VA SMIC MUX0" value="ADC1" />
+        <ctl name="ADC2 Volume" value="62" />
         <ctl name="ADC2_MIXER Switch" value="1" />
         <ctl name="ADC2 MUX" value="INP2" />
         <ctl name="VA_DEC0 MODE" value="ADC_LOW_PWR" />

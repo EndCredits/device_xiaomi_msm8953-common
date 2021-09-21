@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2020, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2013-2019, The Linux Foundation. All rights reserved.
  * Not a Contribution.
  *
  * Copyright (C) 2013 The Android Open Source Project
@@ -421,7 +421,7 @@ int pcm_device_table[AUDIO_USECASE_MAX][2] = {
 };
 
 /* Array to store sound devices */
-static const char * const device_table[SND_DEVICE_MAX] = {
+static const char * device_table[SND_DEVICE_MAX] = {
     [SND_DEVICE_NONE] = "none",
     /* Playback sound devices */
     [SND_DEVICE_OUT_HANDSET] = "handset",
@@ -949,6 +949,7 @@ static struct name_to_index usecase_name_index[AUDIO_USECASE_MAX] = {
     {TO_NAME_INDEX(USECASE_VOWLAN_CALL)},
     {TO_NAME_INDEX(USECASE_VOICEMMODE1_CALL)},
     {TO_NAME_INDEX(USECASE_VOICEMMODE2_CALL)},
+    {TO_NAME_INDEX(USECASE_COMPRESS_VOIP_CALL)},
     {TO_NAME_INDEX(USECASE_INCALL_REC_UPLINK)},
     {TO_NAME_INDEX(USECASE_INCALL_REC_DOWNLINK)},
     {TO_NAME_INDEX(USECASE_INCALL_REC_UPLINK_AND_DOWNLINK)},
@@ -997,6 +998,7 @@ static int msm_device_to_be_id_internal_codec [][NO_COLS] = {
        {AUDIO_DEVICE_OUT_REMOTE_SUBMIX                  ,       9},
        {AUDIO_DEVICE_OUT_PROXY                          ,       9},
        {AUDIO_DEVICE_OUT_FM                             ,       7},
+       {AUDIO_DEVICE_OUT_FM_TX                          ,       8},
        {AUDIO_DEVICE_OUT_ALL                            ,      -1},
        {AUDIO_DEVICE_NONE                               ,      -1},
        {AUDIO_DEVICE_OUT_DEFAULT                        ,      -1},
@@ -1022,6 +1024,7 @@ static int msm_device_to_be_id_external_codec [][NO_COLS] = {
        {AUDIO_DEVICE_OUT_REMOTE_SUBMIX                  ,       9},
        {AUDIO_DEVICE_OUT_PROXY                          ,       9},
        {AUDIO_DEVICE_OUT_FM                             ,       7},
+       {AUDIO_DEVICE_OUT_FM_TX                          ,       8},
        {AUDIO_DEVICE_OUT_ALL                            ,      -1},
        {AUDIO_DEVICE_NONE                               ,      -1},
        {AUDIO_DEVICE_OUT_DEFAULT                        ,      -1},
@@ -1033,22 +1036,6 @@ static int msm_device_to_be_id_external_codec [][NO_COLS] = {
 #define LOW_LATENCY_PLATFORM_DELAY (13*1000LL)
 #define ULL_PLATFORM_DELAY (6*1000LL)
 #define MMAP_PLATFORM_DELAY (3*1000LL)
-
-static int audio_source_delay_ms[AUDIO_SOURCE_CNT] = {0};
-
-static struct name_to_index audio_source_index[AUDIO_SOURCE_CNT] = {
-    {TO_NAME_INDEX(AUDIO_SOURCE_DEFAULT)},
-    {TO_NAME_INDEX(AUDIO_SOURCE_MIC)},
-    {TO_NAME_INDEX(AUDIO_SOURCE_VOICE_UPLINK)},
-    {TO_NAME_INDEX(AUDIO_SOURCE_VOICE_DOWNLINK)},
-    {TO_NAME_INDEX(AUDIO_SOURCE_VOICE_CALL)},
-    {TO_NAME_INDEX(AUDIO_SOURCE_CAMCORDER)},
-    {TO_NAME_INDEX(AUDIO_SOURCE_VOICE_RECOGNITION)},
-    {TO_NAME_INDEX(AUDIO_SOURCE_VOICE_COMMUNICATION)},
-    {TO_NAME_INDEX(AUDIO_SOURCE_REMOTE_SUBMIX)},
-    {TO_NAME_INDEX(AUDIO_SOURCE_UNPROCESSED)},
-    {TO_NAME_INDEX(AUDIO_SOURCE_VOICE_PERFORMANCE)},
-};
 
 static const char *platform_get_mixer_control(struct mixer_ctl *);
 
@@ -2547,8 +2534,6 @@ void *platform_init(struct audio_device *adev)
         } else {
             my_data->is_acdb_initialized = false;
             ALOGD("ACDB initialization failed");
-            if (my_data->acdb_deallocate)
-                my_data->acdb_deallocate();
         }
     }
     audio_extn_pm_vote();
@@ -3229,11 +3214,6 @@ int platform_get_snd_device_index(char *device_name)
 int platform_get_usecase_index(const char *usecase_name)
 {
     return find_index(usecase_name_index, AUDIO_USECASE_MAX, usecase_name);
-}
-
-int platform_get_audio_source_index(const char *audio_source_name)
-{
-    return find_index(audio_source_index, AUDIO_SOURCE_CNT, audio_source_name);
 }
 
 int platform_get_effect_config_data(snd_device_t snd_device,
@@ -4188,7 +4168,7 @@ int platform_get_ext_disp_type(void *platform)
     int disp_type;
     struct platform_data *my_data = (struct platform_data *)platform;
 
-    if (my_data->ext_disp_type > EXT_DISPLAY_TYPE_NONE) {
+    if (my_data->ext_disp_type != EXT_DISPLAY_TYPE_NONE) {
          ALOGD("%s: Returning cached ext disp type:%s",
                __func__, (my_data->ext_disp_type == EXT_DISPLAY_TYPE_DP) ? "DisplayPort" : "HDMI");
          return my_data->ext_disp_type;
@@ -4207,12 +4187,12 @@ int platform_get_ext_disp_type(void *platform)
         }
 
         disp_type = mixer_ctl_get_value(ctl, 0);
-        if (disp_type <= EXT_DISPLAY_TYPE_NONE) {
+        if (disp_type == EXT_DISPLAY_TYPE_NONE) {
              ALOGE("%s: Invalid external display type: %d", __func__, disp_type);
              return -EINVAL;
         }
-    } else {
-        disp_type = EXT_DISPLAY_TYPE_HDMI;
+    }else {
+            disp_type = EXT_DISPLAY_TYPE_HDMI;
     }
 
     my_data->ext_disp_type = disp_type;
@@ -4220,8 +4200,7 @@ int platform_get_ext_disp_type(void *platform)
     return disp_type;
 }
 
-snd_device_t platform_get_output_snd_device(void *platform, struct stream_out *out,
-                                            usecase_type_t uc_type __unused)
+snd_device_t platform_get_output_snd_device(void *platform, struct stream_out *out)
 {
     struct platform_data *my_data = (struct platform_data *)platform;
     struct audio_device *adev = my_data->adev;
@@ -4415,6 +4394,8 @@ snd_device_t platform_get_output_snd_device(void *platform, struct stream_out *o
         } else if (devices & AUDIO_DEVICE_OUT_ANLG_DOCK_HEADSET ||
                    devices & AUDIO_DEVICE_OUT_DGTL_DOCK_HEADSET) {
             snd_device = SND_DEVICE_OUT_USB_HEADSET;
+        } else if (devices & AUDIO_DEVICE_OUT_FM_TX) {
+            snd_device = SND_DEVICE_OUT_TRANSMISSION_FM;
         } else if (devices & AUDIO_DEVICE_OUT_EARPIECE) {
             if (audio_extn_should_use_handset_anc(channel_count))
                 snd_device = SND_DEVICE_OUT_ANC_HANDSET;
@@ -4516,6 +4497,8 @@ snd_device_t platform_get_output_snd_device(void *platform, struct stream_out *o
            snd_device = SND_DEVICE_OUT_USB_HEADSET;
         else
            snd_device = SND_DEVICE_OUT_USB_HEADPHONES;
+    } else if (devices & AUDIO_DEVICE_OUT_FM_TX) {
+        snd_device = SND_DEVICE_OUT_TRANSMISSION_FM;
     } else if (devices & AUDIO_DEVICE_OUT_EARPIECE) {
         if (use_voip_out_devices)
             snd_device = SND_DEVICE_OUT_VOIP_HANDSET;
@@ -4694,8 +4677,7 @@ static snd_device_t get_snd_device_for_voice_comm(struct platform_data *my_data,
 
 snd_device_t platform_get_input_snd_device(void *platform,
                                            struct stream_in *in,
-                                           audio_devices_t out_device,
-                                           usecase_type_t uc_type __unused)
+                                           audio_devices_t out_device)
 {
     struct platform_data *my_data = (struct platform_data *)platform;
     struct audio_device *adev = my_data->adev;
@@ -5290,13 +5272,13 @@ static void set_audiocal(void *platform, struct str_parms *parms, char *value, i
         goto done_key_audcal;
     }
 
+    memset(&cal, 0, sizeof(acdb_audio_cal_cfg_t));
+    /* parse audio calibration keys */
+    ret = parse_audiocal_cfg(parms, &cal);
+
     /* handle audio calibration data now */
     err = str_parms_get_str(parms, AUDIO_PARAMETER_KEY_AUD_CALDATA, value, len);
     if (err >= 0) {
-        memset(&cal, 0, sizeof(acdb_audio_cal_cfg_t));
-        /* parse audio calibration keys */
-        ret = parse_audiocal_cfg(parms, &cal);
-
         str_parms_del(parms, AUDIO_PARAMETER_KEY_AUD_CALDATA);
         dlen = strlen(value);
         if(dlen <= 0) {
@@ -5625,16 +5607,15 @@ static void get_audiocal(void *platform, void *keys, void *pReply) {
         goto done;
     }
 
+    memset(&cal, 0, sizeof(acdb_audio_cal_cfg_t));
+    /* parse audiocal configuration keys */
+    ret = parse_audiocal_cfg(query, &cal);
+    if(ret == 0) {
+        /* No calibration keys found */
+        goto done;
+    }
     err = str_parms_get_str(query, AUDIO_PARAMETER_KEY_AUD_CALDATA, value, sizeof(value));
     if (err >= 0) {
-        memset(&cal, 0, sizeof(acdb_audio_cal_cfg_t));
-        /* parse audiocal configuration keys */
-        ret = parse_audiocal_cfg(query, &cal);
-        if (ret == 0) {
-            /* No calibration keys found */
-            goto done;
-        }
-
         str_parms_del(query, AUDIO_PARAMETER_KEY_AUD_CALDATA);
     } else {
         goto done;
@@ -5788,82 +5769,24 @@ unsigned char* platform_get_license(void *platform __unused, int *size __unused)
 }
 
 
-void platform_set_snd_device_delay(snd_device_t snd_device __unused, int delay_ms __unused)
-{
-}
-
-void platform_set_audio_source_delay(audio_source_t audio_source, int delay_ms)
-{
-    if ((audio_source < AUDIO_SOURCE_DEFAULT) ||
-           (audio_source > AUDIO_SOURCE_MAX)) {
-        ALOGE("%s: Invalid audio_source = %d", __func__, audio_source);
-        return;
-    }
-
-    audio_source_delay_ms[audio_source] = delay_ms;
-}
-
-/* Delay in Us */
-int64_t platform_get_audio_source_delay(audio_source_t audio_source)
-{
-    if ((audio_source < AUDIO_SOURCE_DEFAULT) ||
-            (audio_source > AUDIO_SOURCE_MAX)) {
-        ALOGE("%s: Invalid audio_source = %d", __func__, audio_source);
-        return 0;
-    }
-
-    return 1000LL * audio_source_delay_ms[audio_source];
-}
-
-int64_t platform_capture_latency(struct audio_device *adev __unused,
-                                 audio_usecase_t usecase)
-{
-}
-
 /* Delay in Us, only to be used for PCM formats */
-int64_t platform_render_latency(struct stream_out *out)
+int64_t platform_render_latency(audio_usecase_t usecase)
 {
-    int64_t delay = 0LL;
-
-    if (!out)
-        return delay;
-
-    switch (out->usecase) {
+    switch (usecase) {
         case USECASE_AUDIO_PLAYBACK_DEEP_BUFFER:
-            delay = DEEP_BUFFER_PLATFORM_DELAY;
-            break;
+            return DEEP_BUFFER_PLATFORM_DELAY;
         case USECASE_AUDIO_PLAYBACK_LOW_LATENCY:
-            delay = LOW_LATENCY_PLATFORM_DELAY;
-            break;
+            return LOW_LATENCY_PLATFORM_DELAY;
         case USECASE_AUDIO_PLAYBACK_OFFLOAD:
         case USECASE_AUDIO_PLAYBACK_OFFLOAD2:
-            delay = PCM_OFFLOAD_PLATFORM_DELAY;
-            break;
+            return PCM_OFFLOAD_PLATFORM_DELAY;
         case USECASE_AUDIO_PLAYBACK_ULL:
-            delay = ULL_PLATFORM_DELAY;
-            break;
+            return ULL_PLATFORM_DELAY;
         case USECASE_AUDIO_PLAYBACK_MMAP:
-            delay = MMAP_PLATFORM_DELAY;
-            break;
+            return MMAP_PLATFORM_DELAY;
         default:
-            break;
+            return 0;
     }
-
-    /* out->device could be used to add delay time if it's necessary */
-    return delay;
-}
-
-int64_t platform_capture_latency(struct stream_in *in)
-{
-    int64_t delay = 0LL;
-
-    if (!in)
-        return delay;
-
-    delay = platform_get_audio_source_delay(in->source);
-
-    /* in->device could be used to add delay time if it's necessary */
-    return delay;
 }
 
 int platform_update_usecase_from_source(int source, int usecase)
@@ -8118,6 +8041,21 @@ int platform_get_ec_ref_loopback_snd_device(int channel_count)
     return snd_device;
 }
 
+int platform_set_snd_device_name(snd_device_t device, const char *name)
+{
+    int ret = 0;
+
+    if ((device < SND_DEVICE_MIN) || (device >= SND_DEVICE_MAX)) {
+        ALOGE("%s:: Invalid snd_device = %d", __func__, device);
+        ret = -EINVAL;
+        goto done;
+    }
+
+    device_table[device] = strdup(name);
+done:
+    return ret;
+}
+
 int platform_set_sidetone(struct audio_device *adev,
                           snd_device_t out_snd_device,
                           bool enable,
@@ -8698,98 +8636,4 @@ int platform_get_active_microphones(void *platform, unsigned int channels,
 end:
     *mic_count = actual_mic_count;
     return 0;
-}
-
-int platform_get_edid_info_v2(void *platform,
-                              int controller __unused,
-                              int stream __unused)
-{
-    return platform_get_edid_info(platform);
-}
-
-int platform_edid_get_max_channels_v2(void *platform,
-                                      int controller __unused,
-                                      int stream __unused)
-{
-    return platform_edid_get_max_channels(platform);
-}
-
-bool platform_is_edid_supported_format_v2(void *platform, int format,
-                                          int controller __unused,
-                                          int stream __unused)
-{
-    return platform_is_edid_supported_format(platform, format);
-}
-
-bool platform_is_edid_supported_sample_rate_v2(void *platform, int format,
-                                          int controller __unused,
-                                          int stream __unused)
-{
-    return platform_is_edid_supported_sample_rate(platform, format);
-}
-
-void platform_cache_edid_v2(void * platform,
-                            int controller __unused,
-                            int stream __unused)
-{
-    return platform_cache_edid(platform);
-}
-
-void platform_invalidate_hdmi_config_v2(void * platform,
-                                        int controller __unused,
-                                        int stream __unused)
-{
-    return platform_invalidate_hdmi_config(platform);
-}
-
-int platform_set_ext_display_device(void *platform, int controller, int stream)
-{
-    return -1;
-}
-
-int platform_get_controller_stream_from_params(struct str_parms *parms,
-                                               int *controller, int *stream);
-{
-    return -1;
-}
-
-int platform_get_ext_disp_type_v2(void *platform,
-                                  int controller __unused,
-                                  int stream __unused)
-{
-    return platform_get_ext_disp_type(platform);
-}
-
-int platform_set_edid_channels_configuration_v2(void *platform, int channels,
-                                             int backend_idx,
-                                             snd_device_t snd_device,
-                                             int controller __unused,
-                                             int stream __unused)
-{
-    return platform_set_edid_channels_configuration(platform, channels,
-                                                    backend_idx, snd_device);
-}
-
-int platform_set_channel_allocation_v2(void *platform,
-                                        int controller __unused,
-                                        int stream __unused)
-{
-    return platform_set_channel_allocation(platform);
-}
-
-int platform_set_hdmi_channels_v2(void *platform, int channel_count,
-                                  int controller __unused,
-                                  int stream __unused)
-{
-    return platform_set_hdmi_channels(platform, channel_count);
-}
-
-int platform_get_display_port_ctl_index(int controller __unused,
-                                        int stream __unused)
-{
-    return -EINVAL;
-}
-
-bool platform_is_call_proxy_snd_device(snd_device_t snd_device __unused) {
-    return false;
 }

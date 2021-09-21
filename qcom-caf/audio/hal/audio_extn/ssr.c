@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2018, 2020, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2013-2018, The Linux Foundation. All rights reserved.
  * Not a Contribution.
  *
  * Copyright (C) 2013 The Android Open Source Project
@@ -36,7 +36,19 @@
 #include "audio_extn.h"
 #include "platform.h"
 #include "platform_api.h"
+#ifndef _OSS
 #include "surround_rec_interface.h"
+#else
+typedef struct {
+    const char *name;
+    char *(*get_param_fn)(void *h);
+} get_param_data_t;
+
+typedef struct {
+    const char *name;
+    void (*set_param_fn)(void *h, const char *val);
+} set_param_data_t;
+#endif
 
 #ifdef DYNAMIC_LOG_ENABLED
 #include <log_xml_parser.h>
@@ -339,7 +351,7 @@ bool ssr_get_enabled()
 bool  ssr_check_usecase(struct stream_in *in) {
     int ret = false;
     int channel_count = audio_channel_count_from_in_mask(in->channel_mask);
-    audio_devices_t devices = get_device_types(&in->device_list);
+    audio_devices_t devices = in->device;
     audio_source_t source = in->source;
 
     if ((ssr_get_enabled()) &&

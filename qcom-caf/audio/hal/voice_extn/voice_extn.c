@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2013-2020, The Linux Foundation. All rights reserved.
+ * Copyright (c) 2013-2019, The Linux Foundation. All rights reserved.
  * Not a contribution.
  *
  * Copyright (C) 2013 The Android Open Source Project
@@ -88,7 +88,6 @@ static bool voice_extn_compress_voip_enabled = false;
 static bool voice_extn_dynamic_ecns_feature_enabled = false;
 static bool voice_extn_incall_music_enabled = false;
 static bool voice_extn_multi_session_enabled = false;
-static bool voice_extn_power_mode_enabled = false;
 
 int voice_extn_is_call_state_active(struct audio_device *adev, bool *is_call_active);
 
@@ -364,7 +363,8 @@ static int update_call_states(struct audio_device *adev,
          * occured, otherwise voice calls will be started unintendedly on
          * speaker.
          */
-        if (is_call_active || voice_is_in_call(adev)) {
+        if (is_call_active ||
+                (adev->voice.in_call && adev->mode == AUDIO_MODE_IN_CALL)) {
             /* Device routing is not triggered for voice calls on the subsequent
              * subs, Hence update the call states if voice call is already
              * active on other sub.
@@ -457,18 +457,6 @@ bool voice_extn_is_multi_session_supported()
     return voice_extn_multi_session_enabled;
 }
 
-void voice_power_mode_feature_init(bool is_feature_enabled)
-{
-    voice_extn_power_mode_enabled = is_feature_enabled;
-    ALOGV("%s:: ---- Feature POWER MODE is %s ----", __func__,
-                                is_feature_enabled ? "ENABLED" : "NOT ENABLED");
-}
-
-bool voice_extn_is_voice_power_mode_supported()
-{
-    return voice_extn_power_mode_enabled;
-}
-
 void voice_extn_feature_init()
 {
     // Register feature function here
@@ -481,13 +469,11 @@ void voice_extn_feature_init()
                           false));
     incall_music_feature_init(
        property_get_bool("vendor.audio.feature.incall_music.enable",
-                          false));
+                          true));
     multi_voice_session_feature_init(
        property_get_bool("vendor.audio.feature.multi_voice_session.enable",
-                          false));
-    voice_power_mode_feature_init(
-       property_get_bool("vendor.audio.feature.power_mode.enable",
-                          false));
+                          true));
+
 }
 
 void voice_extn_init(struct audio_device *adev)
@@ -762,8 +748,8 @@ int voice_extn_check_and_set_incall_music_usecase(struct audio_device *adev,
 
         out->config = pcm_config_incall_music;
         //FIXME: add support for MONO stream configuration when audioflinger mixer supports it
-        out->supported_channel_masks[0] = AUDIO_CHANNEL_OUT_MONO;
-        out->supported_channel_masks[1] = AUDIO_CHANNEL_OUT_STEREO;
+        out->supported_channel_masks[0] = AUDIO_CHANNEL_OUT_STEREO;
+        out->channel_mask = AUDIO_CHANNEL_OUT_STEREO;
         out->config.rate = out->sample_rate;
 
         ALOGV("%s: mode=%d, usecase id=%d", __func__, adev->mode, out->usecase);

@@ -166,7 +166,7 @@
     <!-- HFP end -->
     <!-- echo reference -->
     <ctl name="AUDIO_REF_EC_UL1 MUX" value="None" />
-    <ctl name="EC Reference Channels" value="Zero"/>
+    <ctl name="AUDIO_REF_EC_UL10 MUX" value="None" />
     <!-- usb headset -->
     <ctl name="AFE_PCM_RX Audio Mixer MultiMedia1" value="0" />
     <ctl name="AFE_PCM_RX Audio Mixer MultiMedia2" value="0" />
@@ -206,9 +206,6 @@
     <ctl name="VoiceMMode1_Tx Mixer AFE_PCM_TX_MMode1" value="0" />
     <ctl name="USB_AUDIO_RX_Voice Mixer VoiceMMode1" value="0" />
     <ctl name="VoiceMMode1_Tx Mixer USB_AUDIO_TX_MMode1" value="0" />
-    <!-- Multimode Voice1 proxy-Port -->
-    <ctl name="PROXY_RX_Voice Mixer VoiceMMode1" value="0" />
-    <ctl name="VoiceMMode1_Tx Mixer PROXY_TX_MMode1" value="0" />
     <!-- Miltimode Voice1 end-->
 
     <!-- Multimode Voice2 -->
@@ -225,9 +222,6 @@
     <ctl name="VoiceMMode2_Tx Mixer AFE_PCM_TX_MMode2" value="0" />
     <ctl name="USB_AUDIO_RX_Voice Mixer VoiceMMode2" value="0" />
     <ctl name="VoiceMMode2_Tx Mixer USB_AUDIO_TX_MMode2" value="0" />
-    <!-- Multimode Voice2 proxy-Port -->
-    <ctl name="PROXY_RX_Voice Mixer VoiceMMode2" value="0" />
-    <ctl name="VoiceMMode2_Tx Mixer PROXY_TX_MMode2" value="0" />
     <!-- Multimode Voice2 end-->
 
     <!-- Voice external ec. reference -->
@@ -248,7 +242,6 @@
 
     <!-- Incall Music -->
     <ctl name="Incall_Music Audio Mixer MultiMedia2" value="0" />
-    <ctl name="Incall_Music Audio Mixer MultiMedia9" value="0" />
     <!-- Incall Music End -->
 
     <!-- compress-voip-call start -->
@@ -281,7 +274,7 @@
 
     <!-- VoIP over audio -->
     <ctl name="MultiMedia10 Mixer INT3_MI2S_TX" value="0" />
-    <ctl name="MultiMedia10 Mixer SLIM_7_TX" value="0" />
+    <ctl name="MultiMedia10 Mixer SLIM_7_TX" value="0" /> />
     <ctl name="MultiMedia10 Mixer USB_AUDIO_TX" value="0" />
     <ctl name="SLIMBUS_7_RX Audio Mixer MultiMedia10" value="0" />
     <ctl name="INT4_MI2S_RX Audio Mixer MultiMedia10" value="0" />
@@ -420,48 +413,33 @@
 
     <path name="echo-reference">
         <ctl name="AUDIO_REF_EC_UL1 MUX" value="INT4_MI2S_RX" />
-        <ctl name="EC Reference Channels" value="Two"/>
     </path>
 
    <path name="echo-reference handset">
        <ctl name="AUDIO_REF_EC_UL1 MUX" value="INT0_MI2S_RX" />
-       <ctl name="EC Reference Channels" value="One"/>
    </path>
 
     <path name="echo-reference headphones">
         <ctl name="AUDIO_REF_EC_UL1 MUX" value="INT0_MI2S_RX" />
-        <ctl name="EC Reference Channels" value="Two"/>
-    </path>
-
-    <path name="echo-reference headset">
-         <path name="echo-reference headphones" />
     </path>
 
     <path name="echo-reference headphones-44.1">
-         <path name="echo-reference headphones" />
     </path>
 
     <path name="echo-reference-voip">
-        <ctl name="AUDIO_REF_EC_UL1 MUX" value="INT4_MI2S_RX" />
-        <ctl name="EC Reference Channels" value="Two"/>
+        <ctl name="AUDIO_REF_EC_UL10 MUX" value="INT4_MI2S_RX" />
     </path>
 
    <path name="echo-reference-voip handset">
-       <ctl name="AUDIO_REF_EC_UL1 MUX" value="INT0_MI2S_RX" />
-       <ctl name="EC Reference Channels" value="One"/>
+       <ctl name="AUDIO_REF_EC_UL10 MUX" value="INT0_MI2S_RX" />
    </path>
 
     <path name="echo-reference-voip headphones">
-        <ctl name="AUDIO_REF_EC_UL1 MUX" value="INT0_MI2S_RX" />
-        <ctl name="EC Reference Channels" value="Two"/>
+        <ctl name="AUDIO_REF_EC_UL10 MUX" value="INT0_MI2S_RX" />
     </path>
 
-    <path name="echo-reference-voip headset">
-         <path name="echo-reference-voip headphones" />
-    </path>
-
-    <path name="echo-referenc-voip headphones-44.1">
-         <path name="echo-reference-voip headphones" />
+    <path name="echo-reference-voip display-port">
+        <ctl name="AUDIO_REF_EC_UL10 MUX" value="DISPLAY_PORT" />
     </path>
 
     <path name="deep-buffer-playback">
@@ -1944,10 +1922,6 @@
         <path name="incall-rec-uplink-compress" />
     </path>
 
-    <path name="incall-rec-uplink call-proxy-in">
-        <path name="incall-rec-uplink" />
-    </path>
-
     <path name="incall-rec-downlink">
         <ctl name="MultiMedia9 Mixer VOC_REC_DL"  value="1" />
     </path>
@@ -1986,10 +1960,6 @@
 
     <path name="incall-rec-downlink-compress afe-proxy">
         <path name="incall-rec-downlink-compress" />
-    </path>
-
-    <path name="incall-rec-downlink call-proxy-in">
-        <path name="incall-rec-downlink" />
     </path>
 
     <path name="incall-rec-uplink-and-downlink">
@@ -2032,10 +2002,6 @@
 
     <path name="incall-rec-uplink-and-downlink-compress afe-proxy">
         <path name="incall-rec-uplink-and-downlink-compress" />
-    </path>
-
-    <path name="incall-rec-uplink-and-downlink call-proxy-in">
-        <path name="incall-rec-uplink-and-downlink" />
     </path>
 
     <path name="hfp-sco">
@@ -2166,11 +2132,6 @@
         <ctl name="VoiceMMode1_Tx Mixer USB_AUDIO_TX_MMode1" value="1" />
     </path>
 
-    <path name="voicemmode1-call call-proxy">
-        <ctl name="PROXY_RX_Voice Mixer VoiceMMode1" value="1" />
-        <ctl name="VoiceMMode1_Tx Mixer PROXY_TX_MMode1" value="1" />
-    </path>
-
     <path name="voicemmode1-call voice-speaker-vbat">
         <path name="echo-reference speaker-vbat-mono" />
         <path name="voicemmode1-call"/>
@@ -2225,11 +2186,6 @@
     <path name="voicemmode2-call usb-headset">
         <ctl name="USB_AUDIO_RX_Voice Mixer VoiceMMode2" value="1" />
         <ctl name="VoiceMMode2_Tx Mixer USB_AUDIO_TX_MMode2" value="1" />
-    </path>
-
-    <path name="voicemmode2-call call-proxy">
-        <ctl name="PROXY_RX_Voice Mixer VoiceMMode2" value="1" />
-        <ctl name="VoiceMMode2_Tx Mixer PROXY_TX_MMode2" value="1" />
     </path>
 
     <path name="voicemmode2-call voice-speaker-vbat">
@@ -2653,7 +2609,7 @@
     </path>
 
     <path name="audio-record-voip bt-sco">
-         <ctl name="MultiMedia10 Mixer SLIM_7_TX" value="1" />
+         <ctl name="MultiMedia10 Mixer SLIM_7_TX" value="1" /> />
     </path>
 
     <path name="audio-record-voip bt-sco-wb">
@@ -3079,184 +3035,6 @@
 
     <path name="hifi-record usb-headset-mic">
         <ctl name="MultiMedia2 Mixer USB_AUDIO_TX" value="1" />
-    </path>
-
-    <path name="incall_music_uplink">
-        <ctl name="Incall_Music Audio Mixer MultiMedia9" value="1" />
-    </path>
-
-    <path name="incall_music_uplink speaker">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink handset">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink handset-hac">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink display-port">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink bt-sco">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink bt-sco-wb">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink speaker-and-display-port">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink afe-proxy">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink usb-headphones">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink usb-headset">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink speaker-and-usb-headphones">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink speaker-safe-and-usb-headphones">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink headphones">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink speaker-and-headphones">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink speaker-safe-and-headphones">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink speaker-and-bt-sco">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink speaker-safe-and-bt-sco">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink voice-tty-hco-handset">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink speaker-and-bt-a2dp">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink speaker-safe-and-bt-a2dp">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink bt-a2dp">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink afe-proxy">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink call-proxy">
-        <path name="incall_music_uplink" />
-    </path>
-
-    <path name="incall_music_uplink2">
-        <ctl name="Incall_Music_2 Audio Mixer MultiMedia9" value="1" />
-    </path>
-
-    <path name="incall_music_uplink2 speaker">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 handset">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 handset-hac">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 display-port">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 bt-sco">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 bt-sco-wb">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 speaker-and-display-port">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 afe-proxy">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 usb-headphones">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 usb-headset">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 speaker-and-usb-headphones">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 headphones">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 speaker-and-headphones">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 speaker-and-bt-sco">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 voice-tty-hco-handset">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 speaker-and-bt-a2dp">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 bt-a2dp">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="incall_music_uplink2 afe-proxy">
-        <path name="incall_music_uplink2" />
-    </path>
-
-    <path name="call-proxy">
-    </path>
-
-    <path name="call-proxy-in">
     </path>
 
 </mixer>

@@ -1,5 +1,6 @@
 ifneq ($(AUDIO_USE_STUB_HAL), true)
 ifeq ($(strip $(BOARD_USES_ALSA_AUDIO)),true)
+
 LOCAL_PATH := $(call my-dir)
 
 include $(CLEAR_VARS)
@@ -8,7 +9,7 @@ LOCAL_ARM_MODE := arm
 
 AUDIO_PLATFORM := $(TARGET_BOARD_PLATFORM)
 
-ifneq ($(filter msm8974 msm8226 msm8084 msm8610 apq8084 msm8994 msm8992 msm8996 msm8998 apq8098_latv sdm845 sdm710 qcs605 sdmshrike msmnile kona lahaina holi sdm660 msm8937 msm8953 $(MSMSTEPPE) $(TRINKET) lito atoll bengal,$(TARGET_BOARD_PLATFORM)),)
+ifneq ($(filter msm8974 msm8226 msm8084 msm8610 apq8084 msm8994 msm8992 msm8996 msm8998 apq8098_latv sdm845 sdm710 qcs605 sdmshrike msmnile kona sdm660 msm8937 $(MSMSTEPPE) $(TRINKET) lito atoll,$(TARGET_BOARD_PLATFORM)),)
   # B-family platform uses msm8974 code base
   AUDIO_PLATFORM = msm8974
   MULTIPLE_HW_VARIANTS_ENABLED := true
@@ -63,6 +64,7 @@ ifneq ($(filter sdm710,$(TARGET_BOARD_PLATFORM)),)
 endif
 ifneq ($(filter qcs605,$(TARGET_BOARD_PLATFORM)),)
   LOCAL_CFLAGS := -DPLATFORM_QCS605
+  LOCAL_CFLAGS += -DMAX_TARGET_SPECIFIC_CHANNEL_CNT="8"
 endif
 ifneq ($(filter msmnile sdmshrike,$(TARGET_BOARD_PLATFORM)),)
   LOCAL_CFLAGS := -DPLATFORM_MSMNILE
@@ -70,7 +72,7 @@ ifneq ($(filter msmnile sdmshrike,$(TARGET_BOARD_PLATFORM)),)
   LOCAL_CFLAGS += -DINCALL_MUSIC_ENABLED
   LOCAL_CFLAGS += -DINCALL_STEREO_CAPTURE_ENABLED
 endif
-ifneq ($(filter kona lahaina,$(TARGET_BOARD_PLATFORM)),)
+ifneq ($(filter kona,$(TARGET_BOARD_PLATFORM)),)
   LOCAL_CFLAGS := -DPLATFORM_KONA
   LOCAL_CFLAGS += -DMAX_TARGET_SPECIFIC_CHANNEL_CNT="4"
   LOCAL_CFLAGS += -DINCALL_STEREO_CAPTURE_ENABLED
@@ -88,16 +90,6 @@ ifneq ($(filter lito,$(TARGET_BOARD_PLATFORM)),)
   LOCAL_CFLAGS += -DMAX_TARGET_SPECIFIC_CHANNEL_CNT="4"
   LOCAL_CFLAGS += -DINCALL_STEREO_CAPTURE_ENABLED
 endif
-ifneq ($(filter holi,$(TARGET_BOARD_PLATFORM)),)
-  LOCAL_CFLAGS := -DPLATFORM_HOLI
-  LOCAL_CFLAGS += -DMAX_TARGET_SPECIFIC_CHANNEL_CNT="4"
-  LOCAL_CFLAGS += -DINCALL_STEREO_CAPTURE_ENABLED
-endif
-ifneq ($(filter bengal,$(TARGET_BOARD_PLATFORM)),)
-  LOCAL_CFLAGS := -DPLATFORM_BENGAL
-  LOCAL_CFLAGS += -DMAX_TARGET_SPECIFIC_CHANNEL_CNT="4"
-  LOCAL_CFLAGS += -DINCALL_STEREO_CAPTURE_ENABLED
-endif
 ifneq ($(filter atoll,$(TARGET_BOARD_PLATFORM)),)
   LOCAL_CFLAGS := -DPLATFORM_ATOLL
   LOCAL_CFLAGS += -DMAX_TARGET_SPECIFIC_CHANNEL_CNT="4"
@@ -109,10 +101,6 @@ ifneq ($(filter sdm660,$(TARGET_BOARD_PLATFORM)),)
 endif
 ifneq ($(filter msm8937,$(TARGET_BOARD_PLATFORM)),)
   LOCAL_CFLAGS := -DPLATFORM_MSM8937
-  LOCAL_CFLAGS += -DMAX_TARGET_SPECIFIC_CHANNEL_CNT="8"
-endif
-ifneq ($(filter msm8953,$(TARGET_BOARD_PLATFORM)),)
-  LOCAL_CFLAGS := -DPLATFORM_MSM8953
   LOCAL_CFLAGS += -DMAX_TARGET_SPECIFIC_CHANNEL_CNT="8"
 endif
 endif
@@ -140,7 +128,6 @@ LOCAL_SRC_FILES += audio_extn/audio_extn.c \
                    audio_extn/source_track.c \
                    audio_extn/usb.c \
                    audio_extn/utils.c \
-                   audio_extn/device_utils.c \
                    voice_extn/compress_voip.c \
                    voice_extn/voice_extn.c
 
@@ -154,7 +141,9 @@ LOCAL_SHARED_LIBRARIES := \
     libdl \
     libaudioutils \
     libexpat \
+    libhwbinder \
     libhidlbase \
+    libhidltransport \
     libprocessgroup \
     libutils
 
@@ -171,7 +160,6 @@ LOCAL_C_INCLUDES += \
     $(LOCAL_PATH)/voice_extn
 
 LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
-LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include/audio
 LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/techpack/audio/include
 LOCAL_ADDITIONAL_DEPENDENCIES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
 
@@ -250,7 +238,6 @@ endif
 # Hardware specific feature
 ifeq ($(TARGET_COMPILE_WITH_MSM_KERNEL),true)
         LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include
-        LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/include/audio
         LOCAL_C_INCLUDES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr/techpack/audio/include
         LOCAL_ADDITIONAL_DEPENDENCIES += $(TARGET_OUT_INTERMEDIATES)/KERNEL_OBJ/usr
 endif
@@ -336,11 +323,6 @@ ifeq ($(strip $(AUDIO_FEATURE_ENABLED_INSTANCE_ID)), true)
     LOCAL_CFLAGS += -DINSTANCE_ID_ENABLED
 endif
 
-# Kernel specific feature
-ifeq ($(strip $(AUDIO_FEATURE_ENABLED_GKI)), true)
-    LOCAL_CFLAGS += -DAUDIO_GKI_ENABLED
-endif
-
 # Legacy feature
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_KEEP_ALIVE_ARM_FFV)), true)
     LOCAL_CFLAGS += -DRUN_KEEP_ALIVE_IN_ARM_FFV
@@ -359,6 +341,12 @@ ifeq ($(strip $(AUDIO_FEATURE_ENABLED_AHAL_EXT)),true)
     LOCAL_SHARED_LIBRARIES += vendor.qti.hardware.audiohalext@1.0
 endif
 
+ifneq ($(strip $(AUDIO_FEATURE_ENABLED_EXT_AMPLIFIER)),false)
+    LOCAL_CFLAGS += -DEXT_AMPLIFIER_ENABLED
+    LOCAL_SRC_FILES += audio_extn/audio_amplifier.c
+    LOCAL_SHARED_LIBRARIES += libhardware
+endif
+
 ifeq ($(strip $(AUDIO_FEATURE_ELLIPTIC_ULTRASOUND_SUPPORT)),true)
     LOCAL_CFLAGS += -DELLIPTIC_ULTRASOUND_ENABLED
     LOCAL_SRC_FILES += audio_extn/ultrasound.c
@@ -366,7 +354,9 @@ endif
 
 LOCAL_CFLAGS += -D_GNU_SOURCE
 LOCAL_CFLAGS += -Wall -Werror
-LOCAL_EXPORT_C_INCLUDE_DIRS := $(LOCAL_PATH)
+
+LOCAL_COPY_HEADERS_TO   := mm-audio
+LOCAL_COPY_HEADERS      := audio_extn/audio_defs.h
 
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_GCOV)),true)
     LOCAL_CFLAGS += --coverage -fprofile-arcs -ftest-coverage
@@ -374,7 +364,12 @@ ifeq ($(strip $(AUDIO_FEATURE_ENABLED_GCOV)),true)
     LOCAL_STATIC_LIBRARIES += libprofile_rt
 endif
 
-LOCAL_SHARED_LIBRARIES += libbase libhidlbase libutils android.hardware.power@1.2 liblog
+#ifeq ($(strip $(AUDIO_FEATURE_ENABLED_AUTO_HAL)),true)
+#    LOCAL_CFLAGS += -DAUDIO_EXTN_AUTO_HAL_ENABLED
+#    LOCAL_SRC_FILES += audio_extn/auto_hal.c
+#endif
+
+LOCAL_SHARED_LIBRARIES += libbase libhidlbase libhwbinder libutils android.hardware.power@1.2 liblog
 LOCAL_SRC_FILES += audio_perf.cpp
 
 ifeq ($(strip $(AUDIO_FEATURE_ENABLED_FM_TUNER_EXT)),true)
@@ -391,9 +386,6 @@ LOCAL_MODULE_OWNER := qti
 
 LOCAL_VENDOR_MODULE := true
 
-ifneq ($(filter kona lahaina holi,$(TARGET_BOARD_PLATFORM)),)
-LOCAL_SANITIZE := integer_overflow
-endif
 include $(BUILD_SHARED_LIBRARY)
 
 LOCAL_CFLAGS += -Wno-unused-variable
