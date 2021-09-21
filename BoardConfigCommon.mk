@@ -145,7 +145,6 @@ TARGET_PER_MGR_ENABLED := true
 
 # Qualcomm
 BOARD_USES_QCOM_HARDWARE := true
-OVERRIDE_QCOM_HARDWARE_VARIANT := msm8996-r
 
 # Recovery
 TARGET_RECOVERY_FSTAB := $(VENDOR_PATH)/rootdir/etc/fstab.recovery.qcom
