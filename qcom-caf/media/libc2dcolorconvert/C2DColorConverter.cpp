@@ -90,7 +90,7 @@ private:
     LINK_c2dUnMapAddr mC2DUnMapAddr;
 
     void *mAdrenoUtilsHandle;
-    LINK_adreno_compute_fmt_aligned_width_and_height mAdrenoComputeFmtAlignedWidthAndHeight;
+    LINK_AdrenoComputeAlignedWidthAndHeight mAdrenoComputeAlignedWidthAndHeight;
 
     uint32_t mSrcSurface, mDstSurface;
     void * mSrcSurfaceDef;
@@ -155,8 +155,8 @@ C2DColorConverter::C2DColorConverter(size_t srcWidth, size_t srcHeight, size_t d
          return;
      }
 
-    mAdrenoComputeFmtAlignedWidthAndHeight = (LINK_adreno_compute_fmt_aligned_width_and_height)dlsym(mAdrenoUtilsHandle, "compute_fmt_aligned_width_and_height");
-    if (!mAdrenoComputeFmtAlignedWidthAndHeight) {
+     mAdrenoComputeAlignedWidthAndHeight = (LINK_AdrenoComputeAlignedWidthAndHeight)dlsym(mAdrenoUtilsHandle, "compute_aligned_width_and_height");
+     if (!mAdrenoComputeAlignedWidthAndHeight) {
          ALOGE("%s: dlsym ERROR", __FUNCTION__);
          mError = -1;
          return;
@@ -508,23 +508,15 @@ size_t C2DColorConverter::calcSize(ColorConvertFormat format, size_t width, size
     switch (format) {
         case RGB565:
             bpp = 2;
-            mAdrenoComputeFmtAlignedWidthAndHeight(width, height,
-                                                   0, ADRENO_PIXELFORMAT_B5G6R5,
-                                                   1, tile_mode, raster_mode,
-                                                   padding_threshold,
-                                                   &alignedw, &alignedh);
-            ALOGV("%s: alignedw %d alignedh %d", __FUNCTION__,alignedw, alignedh);
+            mAdrenoComputeAlignedWidthAndHeight(width, height, bpp, tile_mode, raster_mode, padding_threshold,
+                                                &alignedw, &alignedh);
             size = alignedw * alignedh * bpp;
             size = ALIGN(size, ALIGN4K);
             break;
         case RGBA8888:
             bpp = 4;
-            mAdrenoComputeFmtAlignedWidthAndHeight(width, height,
-                                                   0, ADRENO_PIXELFORMAT_R8G8B8A8 ,
-                                                   1, tile_mode, raster_mode,
-                                                   padding_threshold,
-                                                   &alignedw, &alignedh);
-            ALOGV("%s: alignedw %d alignedh %d", __FUNCTION__,alignedw, alignedh);
+            mAdrenoComputeAlignedWidthAndHeight(width, height, bpp, tile_mode, raster_mode, padding_threshold,
+                                                &alignedw, &alignedh);
             if (mSrcStride)
               size = mSrcStride *  alignedh * bpp;
             else

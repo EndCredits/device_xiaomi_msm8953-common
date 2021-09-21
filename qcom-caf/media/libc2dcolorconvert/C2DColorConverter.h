@@ -33,8 +33,6 @@
 #include <pthread.h>
 #include <c2d2.h>
 #include <sys/types.h>
-#define ADRENO_PIXELFORMAT_R8G8B8A8 28
-#define ADRENO_PIXELFORMAT_B5G6R5   85
 
 typedef C2D_STATUS (*LINK_c2dCreateSurface)( uint32 *surface_id,
         uint32 surface_bits,
@@ -68,11 +66,9 @@ typedef C2D_STATUS (*LINK_c2dMapAddr)( int mem_fd, void * hostptr, uint32 len, u
 
 typedef C2D_STATUS (*LINK_c2dUnMapAddr)(void * gpuaddr);
 
-typedef void (*LINK_adreno_compute_fmt_aligned_width_and_height)(int width, int height, int plane_id,
-                                                           int format, int num_samples,
-                                                           int tile_mode, int raster_mode,
-                                                           int padding_threshold, int *aligned_w,
-                                                           int *aligned_h);
+typedef void (*LINK_AdrenoComputeAlignedWidthAndHeight) (int width, int height, int bpp, int tile_mode, int raster_mode,
+                                                          int padding_threshold, int *aligned_width, int * aligned_height);
+
 namespace android {
 
 /*TODO: THIS NEEDS TO ENABLED FOR JB PLUS*/

@@ -135,7 +135,7 @@ OMX_ERRORTYPE QComOMXPlugin::getRolesOfComponent(
             }
         }
 
-        OMX_U32 numRoles2 = numRoles;
+        OMX_U32 numRoles2;
         err = (*mGetRolesOfComponentHandle)(
                 const_cast<OMX_STRING>(name), &numRoles2, array);
 
