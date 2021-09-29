@@ -1,3 +1,6 @@
+# Battery Saver
+type sysfs_battery_saver, fs_type, sysfs_type;
+
 # Boot reason
 type proc_boot_reason, fs_type, proc_type;
 
@@ -18,4 +21,3 @@ type debugfs_rmt, debugfs_type, fs_type;
 
 # Touchscreen
 type proc_touchpanel, fs_type, sysfs_type, proc_type;
-
