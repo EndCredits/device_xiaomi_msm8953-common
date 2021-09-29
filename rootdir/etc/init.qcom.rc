@@ -239,6 +239,10 @@ on boot
     chmod 660 /sys/devices/platform/kcal_ctrl.0/kcal_min
     chmod 660 /sys/devices/platform/kcal_ctrl.0/kcal
 	
+    # GPU boost
+    chown system system /sys/class/kgsl/kgsl-3d0/min_pwrlevel
+    chmod 0660 /sys/class/kgsl/kgsl-3d0/min_pwrlevel
+
 # msm specific files that need to be created on /data
 on post-fs-data
     mkdir /data/vendor/misc 01771 system system
