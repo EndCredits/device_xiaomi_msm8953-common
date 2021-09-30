@@ -152,9 +152,6 @@ TARGET_PER_MGR_ENABLED := true
 # Qualcomm
 BOARD_USES_QCOM_HARDWARE := true
 
-QCOM_SOONG_NAMESPACE := \
-    $(VENDOR_PATH)/qcom-caf
-
 # Recovery
 TARGET_RECOVERY_FSTAB := $(VENDOR_PATH)/rootdir/etc/fstab.recovery.qcom
 
