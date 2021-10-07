@@ -119,7 +119,10 @@ PRODUCT_COPY_FILES += \
 
 PRODUCT_PACKAGES += \
     vendor.qti.hardware.bluetooth_audio@2.0.vendor \
-    vendor.qti.hardware.btconfigstore@1.0.vendor \
+    android.hardware.bluetooth@1.0.vendor \
+    android.hardware.bluetooth@1.1.vendor \
+    vendor.qti.hardware.btconfigstore@1.0.vendor:64 \
+    vendor.qti.hardware.btconfigstore@2.0.vendor:64
 
 # Camera
 PRODUCT_PACKAGES += \
@@ -143,16 +146,20 @@ PRODUCT_PACKAGES += \
     gralloc.msm8953 \
     hwcomposer.msm8953 \
     memtrack.msm8953 \
-    libdisplayconfig \
-    libqdMetaData \
     libqdMetaData.vendor \
     libgenlock \
-    libtinyxml
+    libtinyxml \
+    libvulkan \
+    vendor.display.config@1.0.vendor \
+    vendor.display.config@2.0 \
+    android.frameworks.displayservice@1.0.vendor
+
 
 # DRM
 PRODUCT_PACKAGES += \
     android.hardware.drm@1.0-impl:64 \
     android.hardware.drm@1.0-service-lazy \
+    android.hardware.drm@1.4.vendor \
     android.hardware.drm@1.4-service.clearkey
 
 # FM
@@ -168,6 +175,9 @@ PRODUCT_PACKAGES += \
 # GPS
 PRODUCT_PACKAGES += \
     libwifi-hal-ctrl
+    libcurl \
+    android.hardware.gnss@1.1.vendor \
+    android.hardware.gnss@2.1.vendor
 
 PRODUCT_COPY_FILES += \
     $(LOCAL_PATH)/configs/gps/flp.conf:$(TARGET_COPY_OUT_VENDOR)/etc/flp.conf \
@@ -237,8 +247,10 @@ PRODUCT_COPY_FILES += \
 
 # Keymaster HAL
 PRODUCT_PACKAGES += \
-    android.hardware.keymaster@3.0-impl \
-    android.hardware.keymaster@3.0-service
+    android.hardware.keymaster@3.0-impl:64 \
+    android.hardware.keymaster@3.0-service \
+    android.hardware.gatekeeper@1.0.vendor \
+    android.hardware.keymaster@4.1.vendor
 
 # Lights
 PRODUCT_PACKAGES += \
@@ -266,6 +278,14 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     libavservices_minijail.vendor
 
+# Net
+PRODUCT_PACKAGES += \
+    android.system.net.netd@1.1.vendor
+
+# Neuralnetworks
+PRODUCT_PACKAGES += \
+    android.hardware.neuralnetworks@1.3.vendor
+
 # OMX
 PRODUCT_PACKAGES += \
     libc2dcolorconvert \
@@ -279,11 +299,13 @@ PRODUCT_PACKAGES += \
     libOmxSwVencHevc \
     libOmxVdec \
     libOmxVenc \
-    libstagefrighthw
 
 # Perf
 PRODUCT_PACKAGES += \
     vendor.qti.hardware.perf@2.0.vendor
+    libstagefrighthw \
+    libstagefright_enc_common \
+    android.hardware.media.c2@1.0.vendor
 
 # Power
 PRODUCT_PACKAGES += \
@@ -322,6 +344,10 @@ PRODUCT_PACKAGES += \
 # RIL
 PRODUCT_PACKAGES += \
     android.hardware.secure_element@1.0 \
+    android.hardware.radio@1.5.vendor \
+    android.hardware.radio.config@1.2.vendor \
+    android.hardware.radio.deprecated@1.0.vendor \
+    android.hardware.secure_element@1.2.vendor \
     librmnetctl \
     libcnefeatureconfig \
     libxml2 \
@@ -342,6 +368,7 @@ PRODUCT_COPY_FILES += \
 PRODUCT_PACKAGES += \
     android.hardware.sensors@1.0-impl \
     android.hardware.sensors@1.0-service \
+    android.frameworks.sensorservice@1.0.vendor \
     libsensorndkbridge
 
 PRODUCT_COPY_FILES += \
@@ -393,7 +420,8 @@ PRODUCT_COPY_FILES += \
 
 # Wifi
 PRODUCT_PACKAGES += \
-    android.hardware.wifi@1.0-service \
+    android.hardware.wifi@1.0-service-lazy \
+    android.hardware.wifi@1.5.vendor \
     libcld80211 \
     libQWiFiSoftApCfg \
     libwpa_client \
