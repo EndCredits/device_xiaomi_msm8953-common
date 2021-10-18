@@ -29,6 +29,11 @@
 
 function 8953_sched_dcvs_eas()
 {
+
+	rm -f /data/system/storage.xml
+        touch /data/system/storage.xml
+	chattr +i /data/system/storage.xml
+
     #governor settings
     echo 1 > /sys/devices/system/cpu/cpu0/online
     echo "schedutil" > /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
