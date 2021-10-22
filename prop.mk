@@ -197,7 +197,8 @@ rild.libpath=/vendor/lib64/libril-qc-qmi-1.so \
 ro.telephony.iwlan_operation_mode=legacy \
 ro.telephony.call_ring.multiple=false \
 ro.telephony.default_network=22,20 \
-service.qti.ims.enabled=1
+service.qti.ims.enabled=1 \
+persist.sys.fflag.override.settings_provider_model=false
 
 # SoC
 ro.soc.manufacturer=Qualcomm
