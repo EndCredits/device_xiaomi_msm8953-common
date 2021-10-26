@@ -194,6 +194,11 @@ ro.telephony.call_ring.multiple=false \
 ro.telephony.default_network=22,20 \
 service.qti.ims.enabled=1
 
+# SOC
+PRODUCT_PROPERTY_OVERRIDES += \
+ro.soc.manufacturer=QTI \
+ro.soc.model=MSM8953
+
 # Time Services
 PRODUCT_PROPERTY_OVERRIDES += \
 persist.timed.enable=true
