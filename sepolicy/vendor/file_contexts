@@ -68,12 +68,6 @@
 /sys/kernel/gpu/gpu_busy                       u:object_r:sysfs_device_info:s0
 /sys/class/power_supply/battery/temp           u:object_r:sysfs_device_info:s0
 
-# XiaomiParts
-/sys/devices/platform/kcal_ctrl.0(/.*)?                      u:object_r:kcal_dev:s0
-/sys/bus/platform/drivers/kcal_ctrl(/.*)?                    u:object_r:kcal_dev:s0
-/sys/module/mdss_fb/parameters/backlight_dimmer              u:object_r:sysfs_backlightdim:s0
-/sys/class/graphics/fb0/measured_fps                         u:object_r:sysfs_fpsinfo:s0
-
 # Vibration
 /sys/devices/platform/soc/200f000.qcom,spmi/spmi-0/spmi0-03/200f000.qcom,spmi:qcom,pmi8940@3:qcom,haptics@c000/leds/vibrator(/.*)?           u:object_r:sysfs_vibrator:s0
 /sys/class/leds/vibrator/vmax_override               u:object_r:sysfs_vibrator:s0
