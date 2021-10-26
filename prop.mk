@@ -173,6 +173,10 @@ persist.rild.nitz_short_ons_1="" \
 persist.rild.nitz_short_ons_2="" \
 persist.rild.nitz_short_ons_3=""
 
+# Priv-app permissions
+PRODUCT_PROPERTY_OVERRIDES += \
+ro.control_privapp_permissions=false
+
 # Radio
 PRODUCT_PROPERTY_OVERRIDES += \
 DEVICE_PROVISIONED=1 \
