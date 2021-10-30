@@ -298,7 +298,7 @@ PRODUCT_PACKAGES += \
 
 # Perf
 PRODUCT_PACKAGES += \
-    vendor.qti.hardware.perf@2.0.vendor
+    vendor.qti.hardware.perf@2.0.vendor \
     libstagefrighthw \
     libstagefright_enc_common \
     android.hardware.media.c2@1.0.vendor
