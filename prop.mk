@@ -126,9 +126,11 @@ persist.loc.nlp_name=com.qualcomm.location \
 ro.gps.agps_provider=1
 
 # IORap
-ro.iorapd.enable=true
-iorapd.perfetto.enable=true
-iorapd.readahead.enable=true
+PRODUCT_PROPERTY_OVERRIDES += \
+ro.iorapd.enable=true \
+iorapd.perfetto.enable=true \
+iorapd.readahead.enable=true \
+persist.device_config.runtime_native_boot.iorap_readahead_enable=true
 
 # Media
 PRODUCT_PROPERTY_OVERRIDES += \
