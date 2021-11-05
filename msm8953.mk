@@ -381,7 +381,7 @@ PRODUCT_SOONG_NAMESPACES += \
     $(LOCAL_PATH)
 
 QCOM_SOONG_NAMESPACE := \
-    $(LOCAL_PATH)/qcom-caf
+    $(VENDOR_PATH)/qcom-caf
 
 # Thermal
 PRODUCT_COPY_FILES += \
