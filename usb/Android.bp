@@ -19,9 +19,9 @@ cc_binary {
     vintf_fragments: ["android.hardware.usb@1.0-service.msm8953.xml"],
     srcs: ["service.cpp", "Usb.cpp"],
     shared_libs: [
+        "libbase",
         "libcutils",
         "libhidlbase",
-        "liblog",
         "libutils",
         "libhardware",
         "android.hardware.usb@1.0",
