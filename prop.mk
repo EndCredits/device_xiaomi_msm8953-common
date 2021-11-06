@@ -199,9 +199,8 @@ ro.telephony.call_ring.multiple=false \
 ro.telephony.default_network=22,20 \
 service.qti.ims.enabled=1
 
-# SOC
-PRODUCT_PROPERTY_OVERRIDES += \
-ro.soc.manufacturer=QTI \
+# SoC
+ro.soc.manufacturer=Qualcomm
 ro.soc.model=MSM8953
 
 # System
