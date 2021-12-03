@@ -157,16 +157,16 @@ TARGET_USES_INTERACTION_BOOST := true
 
 # Qualcomm
 BOARD_USES_QCOM_HARDWARE := true
-OVERRIDE_QCOM_HARDWARE_VARIANT := msm8996-R
+OVERRIDE_QCOM_HARDWARE_VARIANT := msm8996-r
 TARGET_USES_UM_4_9 := true
 
 # Recovery
 TARGET_RECOVERY_FSTAB := $(VENDOR_PATH)/rootdir/etc/fstab.recovery.qcom
 
 # SELinux
-#include device/qcom/sepolicy-legacy-um/SEPolicy.mk
-#BOARD_VENDOR_SEPOLICY_DIRS += $(VENDOR_PATH)/sepolicy/vendor
-BOARD_VENDOR_SEPOLICY_DIRS += $(VENDOR_PATH)/sepolicy/minimal
+include device/qcom/sepolicy-legacy-um/SEPolicy.mk
+BOARD_VENDOR_SEPOLICY_DIRS += $(VENDOR_PATH)/sepolicy/vendor
+#BOARD_VENDOR_SEPOLICY_DIRS += $(VENDOR_PATH)/sepolicy/minimal
 SELINUX_IGNORE_NEVERALLOWS := true
 
 # Treble
