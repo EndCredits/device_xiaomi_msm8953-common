@@ -1,1 +1,2 @@
 allow vendor_dataservice_app vendor_default_prop:file { open read write getattr };
+allow vendor_dataservice_app user_profile_root_file:dir { open read write search };
