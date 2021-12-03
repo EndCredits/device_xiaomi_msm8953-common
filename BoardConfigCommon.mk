@@ -151,7 +151,7 @@ TARGET_PER_MGR_ENABLED := true
 
 # Power
 TARGET_USES_INTERACTION_BOOST := true
-TARGET_POWERHAL_MODE_EXT := $(COMMON_PATH)/power/power-mode.cpp
+TARGET_POWERHAL_MODE_EXT := $(VENDOR_PATH)/power/power-mode.cpp
 
 # Qualcomm
 BOARD_USES_QCOM_HARDWARE := true
