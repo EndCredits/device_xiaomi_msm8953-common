@@ -10,6 +10,9 @@ type fpce_socket, file_type;
 type fpc_sysfs, fs_type, sysfs_type;
 type gx_fpd_data_file, file_type, core_data_file_type, data_file_type;
 
+# Gpu Boost
+type vendor_sysfs_kgsl, sysfs_type, fs_type;
+
 # Rild
 type rild_file, file_type, vendor_file_type;
 
@@ -25,6 +28,9 @@ type sysfs_fps, sysfs_type, fs_type;
 # QS Device Info
 type sysfs_device_info, sysfs_type, fs_type;
 
+# Sound Control
+type sysfs_hgain, sysfs_type, fs_type;
+
 # Xiaomi Parts
 type kcal_dev, sysfs_type, fs_type;
 type sysfs_headgain, sysfs_type, fs_type;
@@ -35,6 +41,15 @@ type sysfs_torch, sysfs_type, fs_type;
 type sysfs_fastcharge, sysfs_type, fs_type;
 
 type sysfs_touchboost, sysfs_type, fs_type;
+
+# Earpiece Gain
+type sysfs_egain, sysfs_type, fs_type;
+
+# Microphone Gain
+type sysfs_mgain, sysfs_type, fs_type;
+
+# Speaker Gain
+type sysfs_sgain, sysfs_type, fs_type;
 
 # Battery Saver
 type sysfs_battery_saver, fs_type, sysfs_type;
