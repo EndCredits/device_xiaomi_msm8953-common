@@ -14,3 +14,5 @@ get_prop(system_server, userspace_reboot_config_prop);
 
 allow system_server sysfs:file { read write open getattr };
 allow system_server default_android_service:service_manager { add };
+
+allow system_app vendor_default_prop:file { open write read getattr };

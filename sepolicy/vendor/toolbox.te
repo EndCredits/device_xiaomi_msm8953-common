@@ -1,0 +1,1 @@
+allow toolbox cache_file:file { write };
