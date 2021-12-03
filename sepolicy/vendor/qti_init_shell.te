@@ -7,3 +7,9 @@ allow qti_init_shell ctl_start_prop:property_service set;
 
 allow qti_init_shell self:capability { dac_override };
 allow qti_init_shell system_data_file:dir { open read write getattr };
+
+allow qti_init_shell system_data_file:file { getattr unlink open read write ioctl };
+allow qti_init_shell system_data_file:dir { remove_name rmdir };
+allow qti_init_shell proc:dir { setattr };
+
+allow qti_init_shell sysfs:file { open read write getattr };

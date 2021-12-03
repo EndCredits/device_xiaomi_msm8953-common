@@ -1,1 +1,4 @@
-allow toolbox cache_file:file { write };
+allow toolbox cache_file:file { write ioctl };
+
+allow toolbox kmsg_device:chr_file { read open write };
+allow toolbox kernel:system { syslog_read };

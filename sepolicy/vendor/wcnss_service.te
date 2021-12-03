@@ -2,3 +2,6 @@ set_prop(wcnss_service, wifi_prop);
 
 allow wcnss_service wifi_data_file:dir { search };
 allow wcnss_service serialno_prop:file { open read write };
+
+allow wcnss_service system_prop:file { read write open getattr };
+allow wcnss_service serialno_prop:file { getattr };

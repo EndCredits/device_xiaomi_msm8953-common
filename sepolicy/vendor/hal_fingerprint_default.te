@@ -29,3 +29,8 @@ allow hal_fingerprint_default sysfs_leds:dir { open read write search };
 allow hal_fingerprint_default sysfs_battery_supply:dir { open read write search };
 
 dontaudit hal_fingerprint_default rootfs:dir { search read open write };
+
+allow hal_fingerprint_default sysfs_leds:file { read open write };
+allow hal_fingerprint_default sysfs_battery_supply:file { read open write };
+
+allow hal_fingerprint_default default_prop:file { read open getattr };

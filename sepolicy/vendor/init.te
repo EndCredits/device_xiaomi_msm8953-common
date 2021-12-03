@@ -6,3 +6,11 @@ allow init sysfs_type:file { setattr };
 allow init sysfs_leds:lnk_file { open read };
 allow init proc:file { open read write };
 allow init firmware_file:filesystem { getattr };
+
+allow init dirac_prop:file { relabelto read write open getattr };
+
+allow init shell_exec:file { execute_no_trans };
+
+allow init hwservicemanager:binder { call transfer };
+
+allow init system_server:binder { call transfer };
