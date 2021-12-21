@@ -20,7 +20,6 @@ type vendor_sysfs_kgsl, sysfs_type, fs_type;
 type debugfs_sched_features, debugfs_type, fs_type;
 type proc_sysctl_autogroup, proc_type, fs_type;
 type proc_sysctl_schedboost, proc_type, fs_type;
-allow hal_power_default proc_sysctl_compaction_proactiveness:file rw_file_perms;
 type sysfs_msm_subsys, sysfs_type, fs_type;
 
 # Rild
