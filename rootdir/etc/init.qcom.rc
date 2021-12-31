@@ -202,40 +202,6 @@ on boot
     # Create hvdcp_opti directory
     mkdir /mnt/vendor/persist/hvdcp_opti 0770 root system
 
-	# Flashlight
-    chown root system /sys/devices/platform/soc/200f000.qcom,spmi/spmi-0/spmi0-03/200f000.qcom,spmi:qcom,pmi8950@3:qcom,leds@d300/leds/led:torch_0/max_brightness
-    chmod 0660 /sys/devices/platform/soc/200f000.qcom,spmi/spmi-0/spmi0-03/200f000.qcom,spmi:qcom,pmi8950@3:qcom,leds@d300/leds/led:torch_0/max_brightness
-    chown root system /sys/devices/platform/soc/200f000.qcom,spmi/spmi-0/spmi0-03/200f000.qcom,spmi:qcom,pmi8950@3:qcom,leds@d300/leds/led:torch_1/max_brightness
-    chmod 0660 /sys/devices/platform/soc/200f000.qcom,spmi/spmi-0/spmi0-03/200f000.qcom,spmi:qcom,pmi8950@3:qcom,leds@d300/leds/led:torch_1/max_brightness
-    # write /sys/class/leds/led:torch_1/max_brightness 0
-
-    # Vibration
-    chown system system /sys/class/leds/vibrator/vmax_override
-    chmod 0660 /sys/class/leds/vibrator/vmax_override
-    write /sys/class/leds/vibrator/vmax_override 1
-    chown system system /sys/class/leds/vibrator/vmax_mv_user
-    chmod 0660 /sys/class/leds/vibrator/vmax_mv_user
-    chown system system /sys/class/leds/vibrator/vmax_mv_strong
-    chmod 0660 /sys/class/leds/vibrator/vmax_mv_strong
-    chown system system /sys/class/leds/vibrator/vmax_mv_call
-    chmod 0660 /sys/class/leds/vibrator/vmax_mv_call
-	
-	#kcal
-	chown system system /sys/devices/platform/kcal_ctrl.0/kcal_cont
-    chown system system /sys/devices/platform/kcal_ctrl.0/kcal_enable
-    chown system system /sys/devices/platform/kcal_ctrl.0/kcal_hue
-    chown system system /sys/devices/platform/kcal_ctrl.0/kcal_sat
-    chown system system /sys/devices/platform/kcal_ctrl.0/kcal_val
-    chown system system /sys/devices/platform/kcal_ctrl.0/kcal_min
-    chown system system /sys/devices/platform/kcal_ctrl.0/kcal
-    chmod 660 /sys/devices/platform/kcal_ctrl.0/kcal_cont
-    chmod 660 /sys/devices/platform/kcal_ctrl.0/kcal_enable
-    chmod 660 /sys/devices/platform/kcal_ctrl.0/kcal_hue
-    chmod 660 /sys/devices/platform/kcal_ctrl.0/kcal_sat
-    chmod 660 /sys/devices/platform/kcal_ctrl.0/kcal_val
-    chmod 660 /sys/devices/platform/kcal_ctrl.0/kcal_min
-    chmod 660 /sys/devices/platform/kcal_ctrl.0/kcal
-	
 # msm specific files that need to be created on /data
 on post-fs-data
     mkdir /data/vendor/misc 01771 system system
@@ -597,6 +563,11 @@ service vendor.msm_irqbalance /vendor/bin/msm_irqbalance -f /system/vendor/etc/m
 
 on charger
     setprop persist.sys.usb.config mass_storage
+
+    # Notification LED
+    chown system system /sys/class/leds/red/brightness
+    write /sys/class/leds/red/brightness 255
+    
     start qcom-post-boot
 
 #Mixed HWC versions among targets
@@ -614,5 +585,5 @@ service vendor.audio-hal /vendor/bin/hw/android.hardware.audio.service
     group audio camera drmrpc inet media mediadrm net_bt net_bt_admin net_bw_acct oem_2901 wakelock
     capabilities BLOCK_SUSPEND SYS_NICE
     ioprio rt 4
-    task_profiles ProcessCapacityHigh HighPerformance
+    writepid /dev/cpuset/foreground/tasks /dev/stune/foreground/tasks
     onrestart restart audioserver
