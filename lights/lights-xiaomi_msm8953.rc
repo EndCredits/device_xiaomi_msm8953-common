@@ -21,7 +21,6 @@ on early-boot
     chown system system /sys/class/leds/button-backlight/brightness
 
 service vendor.light-xiaomi_msm8953 /vendor/bin/hw/android.hardware.lights-service.xiaomi_msm8953
-    interface android.hardware.light::ILight default
     class hal
     user system
     group system
