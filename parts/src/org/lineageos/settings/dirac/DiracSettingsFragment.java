@@ -21,7 +21,7 @@ import android.widget.Switch;
 
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
-import androidx.preference.PreferenceCategory;
+import androidx.preference.Preference.OnPreferenceChangeListener;
 import androidx.preference.PreferenceFragment;
 import androidx.preference.SwitchPreference;
 
@@ -31,7 +31,7 @@ import com.android.settingslib.widget.OnMainSwitchChangeListener;
 import org.lineageos.settings.R;
 
 public class DiracSettingsFragment extends PreferenceFragment implements
-        Preference.OnPreferenceChangeListener, OnMainSwitchChangeListener {
+        OnPreferenceChangeListener, OnMainSwitchChangeListener {
 
     private static final String PREF_ENABLE = "dirac_enable";
     private static final String PREF_HEADSET = "dirac_headset_pref";
@@ -78,9 +78,9 @@ public class DiracSettingsFragment extends PreferenceFragment implements
 
     @Override
     public void onSwitchChanged(Switch switchView, boolean isChecked) {
-        DiracUtils.setMusic(isChecked);
-
         mSwitchBar.setChecked(isChecked);
+
+        DiracUtils.setMusic(isChecked);
 
         mHeadsetType.setEnabled(isChecked);
         mPreset.setEnabled(isChecked);

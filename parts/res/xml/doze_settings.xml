@@ -30,7 +30,7 @@
         android:title="@string/ambient_display_always_on_title"
         android:summary="@string/ambient_display_always_on_summary"
         android:persistent="false" 
-	android:icon="@drawable/ic_display" />
+        android:icon="@drawable/ic_display" />
 
     <PreferenceCategory
         android:key="tilt_sensor"
