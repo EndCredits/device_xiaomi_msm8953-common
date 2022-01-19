@@ -529,4 +529,9 @@
 
     <!-- Button backlight support -->
     <bool name="config_button_brightness_support">true</bool>
+    
+    <!-- List of comma separated package names for 
+    which we the system will not show crash, ANR,
+         etc. dialogs. --> 
+     <string name="config_appsNotReportingCrashes">com.google.android.tts</string>
 </resources>
