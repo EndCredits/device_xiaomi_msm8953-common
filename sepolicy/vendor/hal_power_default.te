@@ -25,3 +25,5 @@ allow hal_power_default sysfs_kgsl:lnk_file r_file_perms;
 
 # To get/set powerhal state property
 set_prop(hal_power_default, power_prop)
+
+dontaudit hal_power_default self:capability dac_override;
