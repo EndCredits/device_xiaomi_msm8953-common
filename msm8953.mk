@@ -74,7 +74,7 @@ PRODUCT_PACKAGES += \
     AntHalService
 
 # Device-specific Settings
-PRODUCT_PACKAGES += \
+# PRODUCT_PACKAGES += \
     XiaomiParts
 
 # Audio
