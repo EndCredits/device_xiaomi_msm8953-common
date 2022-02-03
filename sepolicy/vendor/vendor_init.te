@@ -10,4 +10,9 @@ allow vendor_init {
   wpa_socket
 }:dir { create search getattr open read setattr ioctl write add_name remove_name rmdir relabelfrom };
 
-allow vendor_init proc_sysctl_autogroup:file w_file_perms;
+allow vendor_init device:file { create };
+allow vendor_init default_prop:file { read };
+allow vendor_init bluetooth_prop:file { read };
+allow vendor_init cache_file:dir { write remove_name };
+allow vendor_init cache_file:file { open link unlink };
+allow vendor_init tombstone_data_file:dir { getattr };
