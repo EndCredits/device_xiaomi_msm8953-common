@@ -33,27 +33,35 @@ using android::hardware::joinRpcThreadpool;
 using android::hardware::power::V1_2::IPower;
 using android::hardware::power::V1_2::implementation::Power;
 
-int main(int /* argc */, char** /* argv */) {
+int main() {
+
+    status_t status;
+    android::sp<IPower> service = nullptr;
+
     ALOGI("Power HAL Service 1.2 is starting.");
 
-    android::sp<IPower> service = new Power();
+    service = new Power();
     if (service == nullptr) {
         ALOGE("Can not create an instance of Power HAL Iface, exiting.");
-        return 1;
+
+        goto shutdown;
     }
 
     configureRpcThreadpool(1, true /*callerWillJoin*/);
 
-    status_t status = service->registerAsService();
+    status = service->registerAsService();
     if (status != OK) {
-        ALOGE("Could not register service for Power HAL Iface (%d), exiting.", status);
-        return 1;
+        ALOGE("Could not register service for Power HAL Iface (%d).", status);
+        goto shutdown;
     }
 
     ALOGI("Power Service is ready");
     joinRpcThreadpool();
+    //Should not pass this line
 
+shutdown:
     // In normal operation, we don't expect the thread pool to exit
+
     ALOGE("Power Service is shutting down");
     return 1;
 }
