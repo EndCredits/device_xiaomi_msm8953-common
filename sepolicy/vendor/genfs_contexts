@@ -21,6 +21,3 @@ genfscon sysfs /devices/platform/soc/soc:qcom,mincpubw    u:object_r:sysfs_msm_s
 
 # Rmt
 genfscon debugfs /rmt_storage	u:object_r:debugfs_rmt:s0
-
-# Battery Saver
-genfscon sysfs /module/battery_saver/parameters/enabled u:object_r:sysfs_battery_saver:s0
