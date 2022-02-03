@@ -31,7 +31,7 @@
 #include <utils/Trace.h>
 
 namespace aidl {
-namespace google {
+namespace android {
 namespace hardware {
 namespace power {
 namespace impl {
@@ -237,5 +237,5 @@ binder_status_t Power::dump(int fd, const char **, uint32_t) {
 }  // namespace impl
 }  // namespace power
 }  // namespace hardware
-}  // namespace google
+}  // namespace android
 }  // namespace aidl
