@@ -526,4 +526,7 @@
             2 - Supported with variable brightness control
     -->
     <integer name="config_deviceSupportsButtonBrightnessControl">1</integer>
+
+    <!-- Button backlight support -->
+    <bool name="config_button_brightness_support">true</bool>
 </resources>
