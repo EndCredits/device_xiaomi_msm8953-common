@@ -356,6 +356,10 @@ PRODUCT_PACKAGES += \
     init.qcom.bt.sh \
     init.qcom.post_boot.sh
 
+# Remove
+PRODUCT_PACKAGES += \
+    Remove_Packages
+
 # RIL
 PRODUCT_PACKAGES += \
     android.hardware.secure_element@1.0 \
