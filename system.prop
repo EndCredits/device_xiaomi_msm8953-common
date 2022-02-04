@@ -130,9 +130,6 @@ ro.telephony.default_network=22,22
 # WiFi
 persist.mm.sta.enable=0
 
-# WFD
-persist.hwc.enable_vds=1
-
 # ZRAM
 ro.zram.mark_idle_delay_mins=60
 ro.zram.first_wb_delay_mins=180
