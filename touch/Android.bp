@@ -1,4 +1,4 @@
-// Copyright (C) 2015 The Android Open Source Project
+// Copyright (C) 2019 The LineageOS Project
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,23 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-cc_library_shared {
-
-    name: "thermal.msm8953",
+cc_binary {
+    name: "vendor.lineage.touch@1.0-service.xiaomi_8953",
+    init_rc: ["vendor.lineage.touch@1.0-service.xiaomi_8953.rc"],
+    defaults: ["hidl_defaults"],
+    vintf_fragments: ["vendor.lineage.touch@1.0-service.xiaomi_8953.xml"],
     relative_install_path: "hw",
-    proprietary: true,
-
-    srcs: ["thermal.c"] + ["thermal_common.c"] + ["thermal-8953.c"],
-
-    header_libs: [
-        "libutils_headers",
-        "libhardware_headers",
+    vendor: true,
+    srcs: [
+        "KeyDisabler.cpp",
+        "service.cpp"
     ],
     shared_libs: [
-        "liblog",
-        "libcutils",
+        "libbase",
+        "libhidlbase",
+        "libutils",
+        "vendor.lineage.touch@1.0",
     ],
-
-    cflags: ["-Wno-unused-parameter"],
-
 }
