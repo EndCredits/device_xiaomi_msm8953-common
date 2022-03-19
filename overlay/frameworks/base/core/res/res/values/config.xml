@@ -549,13 +549,6 @@
          before setting power profiles on boot. -->
     <bool name="config_waitForMpctlOnBoot">true</bool>
 
-    <!-- Button backlight control. Possible values are:
-            0 - Not supported
-            1 - Supported, but only on/off mode
-            2 - Supported with variable brightness control
-    -->
-    <integer name="config_deviceSupportsButtonBrightnessControl">1</integer>
-
     <!-- Smart charging -->
     <string name="config_SmartChargingSysfsNode" translatable="false">/sys/class/power_supply/battery/charging_enabled</string>
     <string name="config_SmartChargingSuspendValue" translatable="false">0</string>
@@ -621,4 +614,7 @@
     <item name="config_wallpaperMaxScale" format="float" type="dimen">1.00</item>
 
     <bool name="config_enableWifiDisplay">true</bool>
+
+     <!-- Set Button backlight -->
+    <bool name="config_button_brightness_support">true</bool>
 </resources>
